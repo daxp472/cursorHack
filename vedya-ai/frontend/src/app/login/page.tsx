@@ -7,6 +7,13 @@ import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
 import PrimaryButton from "@/components/PrimaryButton";
 
+/** Pitch / classroom demo account — also seeded in the database. */
+export const DEMO_ACCOUNT = {
+  email: "demo@vedya.ai",
+  password: "DemoPass123",
+  label: "Demo Vaidya",
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const { t, setSession } = useApp();
@@ -15,6 +22,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function fillDemo() {
+    setEmail(DEMO_ACCOUNT.email);
+    setPassword(DEMO_ACCOUNT.password);
+    setError("");
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +35,7 @@ export default function LoginPage() {
     try {
       const res = await api.login({ email, password });
       setSession(res.access_token, res.user);
-      router.push("/");
+      router.push("/dashboard");
     } catch {
       setError(t("authError"));
     } finally {
@@ -35,6 +48,16 @@ export default function LoginPage() {
       <div className="veda-auth-card">
         <h1>{t("loginTitle")}</h1>
         <p className="veda-auth-sub">{t("loginSub")}</p>
+
+        <button type="button" className="veda-demo-chip" onClick={fillDemo}>
+          <span className="veda-demo-chip-badge">{t("demoBadge")}</span>
+          <span className="veda-demo-chip-body">
+            <strong>{DEMO_ACCOUNT.label}</strong>
+            <small>{DEMO_ACCOUNT.email}</small>
+          </span>
+          <span className="veda-demo-chip-cta">{t("useDemo")}</span>
+        </button>
+
         <form onSubmit={onSubmit}>
           <div className="veda-field">
             <label htmlFor="login-email">{t("email")}</label>

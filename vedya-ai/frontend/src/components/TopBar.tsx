@@ -34,6 +34,9 @@ export default function TopBar() {
 
         {user ? (
           <>
+            <Link href="/dashboard" className="veda-link-btn veda-link-btn-ghost">
+              {t("dashboard")}
+            </Link>
             <Link href="/history" className="veda-link-btn veda-link-btn-ghost">
               {t("history")}
             </Link>

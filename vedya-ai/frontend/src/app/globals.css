@@ -477,6 +477,262 @@ button, input, textarea {
   margin: 0 0 0.75rem;
 }
 
+/* Demo login chip */
+.veda-demo-chip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 1.15rem;
+  border-radius: var(--veda-radius);
+  border: 1px dashed var(--veda-harita);
+  background: var(--veda-harita-soft);
+  cursor: pointer;
+  transition: border-color 150ms ease, transform 150ms ease;
+  font-family: var(--font-ui);
+}
+
+.veda-demo-chip:hover {
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+.veda-demo-chip-badge {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--veda-harita);
+  padding: 0.28rem 0.45rem;
+  border-radius: 6px;
+}
+
+.veda-demo-chip-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.veda-demo-chip-body strong {
+  font-size: 0.92rem;
+  color: var(--veda-ink);
+}
+
+.veda-demo-chip-body small {
+  font-size: 0.75rem;
+  color: var(--veda-ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.veda-demo-chip-cta {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--veda-harita);
+}
+
+/* Dashboard */
+.veda-dash-shell {
+  min-height: calc(100vh - 7rem);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(27, 95, 74, 0.08), transparent 55%),
+    var(--veda-shila);
+  padding: 2rem 1.25rem 3rem;
+}
+
+.veda-dash {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.veda-dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.veda-dash-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--veda-harita);
+}
+
+.veda-dash-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 550;
+  color: var(--veda-ink);
+}
+
+.veda-dash-sub {
+  margin: 0;
+  max-width: 28rem;
+  color: var(--veda-ink-soft);
+  font-size: 0.92rem;
+}
+
+.veda-dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.veda-dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (max-width: 800px) {
+  .veda-dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.veda-dash-card {
+  background: var(--veda-surface);
+  border: 1px solid var(--veda-shila-deep);
+  border-radius: var(--veda-radius-lg);
+  padding: 1.15rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 8.5rem;
+}
+
+.veda-dash-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--veda-ink);
+}
+
+.veda-dash-card p {
+  margin: 0;
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--veda-ink-soft);
+}
+
+.veda-dash-card-accent {
+  border-color: var(--veda-harita-soft);
+  background: linear-gradient(160deg, var(--veda-harita-soft), var(--veda-surface) 70%);
+}
+
+.veda-dash-stat {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 550;
+  color: var(--veda-harita);
+  line-height: 1;
+}
+
+.veda-dash-cases {
+  background: var(--veda-surface);
+  border: 1px solid var(--veda-shila-deep);
+  border-radius: var(--veda-radius-lg);
+  padding: 1.25rem 1.15rem;
+}
+
+.veda-dash-cases-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.veda-dash-cases-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--veda-ink);
+}
+
+.veda-dash-link {
+  color: var(--veda-harita);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.veda-dash-link:hover {
+  text-decoration: underline;
+}
+
+.veda-dash-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--veda-ink-soft);
+  font-size: 0.9rem;
+}
+
+.veda-dash-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.veda-dash-case {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--veda-radius);
+  border: 1px solid var(--veda-shila-deep);
+  background: var(--veda-shila);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  text-align: left;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.veda-dash-case:hover {
+  border-color: var(--veda-harita);
+  background: #fff;
+}
+
+.veda-dash-case strong {
+  display: block;
+  color: var(--veda-ink);
+  font-size: 0.95rem;
+}
+
+.veda-dash-case small {
+  color: var(--veda-ink-soft);
+  font-size: 0.75rem;
+}
+
+.veda-dash-open {
+  color: var(--veda-harita);
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+
 /* ── Voice (ElevenLabs) ── */
 .veda-hero-voice {
   margin-top: 0.85rem;

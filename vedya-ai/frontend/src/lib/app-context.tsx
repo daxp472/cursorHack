@@ -26,7 +26,7 @@ export interface AuthUser {
 interface AppState {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, vars?: Record<string, string>) => string;
   token: string | null;
   user: AuthUser | null;
   setSession: (token: string, user: AuthUser) => void;
@@ -96,7 +96,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () => ({
       locale,
       setLocale,
-      t: (key: string) => translate(locale, key),
+      t: (key: string, vars?: Record<string, string>) => translate(locale, key, vars),
       token,
       user,
       setSession,

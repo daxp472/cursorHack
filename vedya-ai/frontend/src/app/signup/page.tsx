@@ -28,7 +28,7 @@ export default function SignupPage() {
         preferred_locale: locale,
       });
       setSession(res.access_token, res.user);
-      router.push("/");
+      router.push("/dashboard");
     } catch {
       setError(t("signupError"));
     } finally {

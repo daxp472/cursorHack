@@ -98,6 +98,17 @@ const en: Dict = {
   shareCase: "Share case",
   shareCopied: "Link copied",
   exportMd: "Export markdown",
+  demoBadge: "Demo",
+  useDemo: "Fill form",
+  dashboard: "Dashboard",
+  dashboardEyebrow: "Your workspace",
+  dashboardWelcome: "Welcome, {name}",
+  dashboardSub: "Saved cases, follow-ups, and quick ranking — educational use only.",
+  dashQuickRank: "Rank a vignette",
+  dashQuickRankHint: "Start from the home search or open a classroom preset.",
+  dashCasesHint: "Cases saved while you are logged in.",
+  dashSession: "Signed in as",
+  dashRecentCases: "Recent cases",
 };
 
 const hi: Dict = {
@@ -190,6 +201,17 @@ const hi: Dict = {
   shareCase: "केस साझा करें",
   shareCopied: "लिंक कॉपी हुआ",
   exportMd: "मार्कडाउन निर्यात",
+  demoBadge: "डेमो",
+  useDemo: "भरें",
+  dashboard: "डैशबोर्ड",
+  dashboardEyebrow: "आपका कार्यक्षेत्र",
+  dashboardWelcome: "स्वागत है, {name}",
+  dashboardSub: "सहेजे केस, अनुवर्ती प्रश्न और त्वरित क्रम — केवल शैक्षिक उपयोग।",
+  dashQuickRank: "विवरण क्रमबद्ध करें",
+  dashQuickRankHint: "होम खोज से शुरू करें या डेमो केस खोलें।",
+  dashCasesHint: "लॉग इन रहते सहेजे गए केस।",
+  dashSession: "साइन इन",
+  dashRecentCases: "हाल के केस",
 };
 
 const gu: Dict = {
@@ -282,6 +304,17 @@ const gu: Dict = {
   shareCase: "કેસ શેર કરો",
   shareCopied: "લિંક કૉપિ થઈ",
   exportMd: "માર્કડાઉન એક્સપોર્ટ",
+  demoBadge: "ડેમો",
+  useDemo: "ભરો",
+  dashboard: "ડેશબોર્ડ",
+  dashboardEyebrow: "તમારું વર્કસ્પેસ",
+  dashboardWelcome: "સ્વાગત છે, {name}",
+  dashboardSub: "સાચવેલા કેસ, અનુવર્તી પ્રશ્નો અને ઝડપી ક્રમ — ફક્ત શૈક્ષણિક ઉપયોગ.",
+  dashQuickRank: "વર્ણન ક્રમ આપો",
+  dashQuickRankHint: "હોમ શોધથી શરૂ કરો અથવા ડેમો કેસ ખોલો.",
+  dashCasesHint: "લૉગ ઇન રહીને સાચવેલા કેસ.",
+  dashSession: "સાઇન ઇન",
+  dashRecentCases: "તાજેતરના કેસ",
 };
 
 const TABLES: Record<Locale, Dict> = { en, hi, gu };
