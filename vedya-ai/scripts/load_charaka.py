@@ -71,7 +71,7 @@ def main():
     execute_values(
         cur,
         """
-        INSERT INTO references (work, sthana, chapter, verse_id, excerpt_text, source_file, corpus_version)
+        INSERT INTO "references" (work, sthana, chapter, verse_id, excerpt_text, source_file, corpus_version)
         VALUES %s
         ON CONFLICT DO NOTHING
         """,

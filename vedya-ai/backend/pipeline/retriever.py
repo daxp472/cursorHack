@@ -82,7 +82,7 @@ def retrieve_candidates(
             """
             SELECT r.ref_id::text, r.work, r.sthana, r.chapter, r.verse_id, r.excerpt_text
             FROM yoga_references yr
-            JOIN references r ON yr.ref_id = r.ref_id
+            JOIN "references" r ON yr.ref_id = r.ref_id
             WHERE yr.yoga_id = %s
             """,
             (yoga_id,),

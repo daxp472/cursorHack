@@ -303,7 +303,7 @@ async def get_formulation(yoga_id: str):
         """
         SELECT r.ref_id::text, r.work, r.sthana, r.chapter, r.verse_id, r.excerpt_text
         FROM yoga_references yr
-        JOIN references r ON yr.ref_id = r.ref_id
+        JOIN "references" r ON yr.ref_id = r.ref_id
         WHERE yr.yoga_id = %s
         """,
         (yoga_id,),
@@ -366,7 +366,7 @@ async def compare_formulations(
 
         cur.execute(
             "SELECT r.ref_id::text, r.work, r.sthana, r.chapter, r.verse_id, r.excerpt_text "
-            "FROM yoga_references yr JOIN references r ON yr.ref_id=r.ref_id WHERE yr.yoga_id=%s",
+            'FROM yoga_references yr JOIN "references" r ON yr.ref_id=r.ref_id WHERE yr.yoga_id=%s',
             (yoga_id,),
         )
         refs = [{"ref_id": r[0], "work": r[1], "sthana": r[2], "chapter": r[3],

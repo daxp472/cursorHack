@@ -133,7 +133,7 @@ CREATE INDEX IF NOT EXISTS idx_yoga_ing_dravya ON yoga_ingredients(dravya_id);
 -- REFERENCES — Classical citation metadata
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS references (
+CREATE TABLE IF NOT EXISTS "references" (
     ref_id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     work            TEXT NOT NULL,         -- e.g. 'Charaka Samhita'
     sthana          TEXT,                  -- e.g. 'Cikitsasthana'
@@ -144,20 +144,20 @@ CREATE TABLE IF NOT EXISTS references (
     corpus_version  TEXT NOT NULL DEFAULT '1.0.0',
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS idx_refs_work    ON references(work);
-CREATE INDEX IF NOT EXISTS idx_refs_sthana  ON references(sthana);
+CREATE INDEX IF NOT EXISTS idx_refs_work    ON "references"(work);
+CREATE INDEX IF NOT EXISTS idx_refs_sthana  ON "references"(sthana);
 
 -- Yoga ↔ Reference (many-to-many)
 CREATE TABLE IF NOT EXISTS yoga_references (
     yoga_id         UUID NOT NULL REFERENCES yogas(yoga_id) ON DELETE CASCADE,
-    ref_id          UUID NOT NULL REFERENCES references(ref_id) ON DELETE CASCADE,
+    ref_id          UUID NOT NULL REFERENCES "references"(ref_id) ON DELETE CASCADE,
     PRIMARY KEY (yoga_id, ref_id)
 );
 
 -- Add FK from yoga_indications to references (after references table exists)
 ALTER TABLE yoga_indications
     ADD CONSTRAINT fk_yoga_ind_ref
-    FOREIGN KEY (source_ref_id) REFERENCES references(ref_id) ON DELETE SET NULL
+    FOREIGN KEY (source_ref_id) REFERENCES "references"(ref_id) ON DELETE SET NULL
     DEFERRABLE INITIALLY DEFERRED;
 
 -- ============================================================
@@ -165,7 +165,7 @@ ALTER TABLE yoga_indications
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS verse_embeddings (
-    ref_id          UUID PRIMARY KEY REFERENCES references(ref_id) ON DELETE CASCADE,
+    ref_id          UUID PRIMARY KEY REFERENCES "references"(ref_id) ON DELETE CASCADE,
     embedding       vector(1536),          -- OpenAI text-embedding-3-small dimension
     model_name      TEXT NOT NULL DEFAULT 'text-embedding-3-small',
     corpus_version  TEXT NOT NULL DEFAULT '1.0.0',

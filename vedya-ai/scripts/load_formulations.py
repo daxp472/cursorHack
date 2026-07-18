@@ -134,7 +134,7 @@ def main():
         if ref_text:
             cur.execute(
                 """
-                INSERT INTO references (work, excerpt_text)
+                INSERT INTO "references" (work, excerpt_text)
                 VALUES (%s, %s)
                 ON CONFLICT DO NOTHING
                 RETURNING ref_id
@@ -143,7 +143,7 @@ def main():
             )
             row = cur.fetchone()
             if row is None:
-                cur.execute("SELECT ref_id FROM references WHERE work = %s AND excerpt_text = %s", (ref_text, ref_text))
+                cur.execute('SELECT ref_id FROM "references" WHERE work = %s AND excerpt_text = %s', (ref_text, ref_text))
                 row = cur.fetchone()
             if row:
                 ref_id = str(row[0])

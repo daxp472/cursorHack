@@ -45,7 +45,7 @@ def main():
     cur.execute(
         """
         SELECT r.ref_id, r.excerpt_text
-        FROM references r
+        FROM "references" r
         LEFT JOIN verse_embeddings ve ON r.ref_id = ve.ref_id
         WHERE ve.ref_id IS NULL AND r.excerpt_text IS NOT NULL AND length(r.excerpt_text) > 20
         ORDER BY r.created_at
