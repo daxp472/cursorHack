@@ -935,10 +935,14 @@ button, input, textarea {
   margin-top: 0.2rem;
 }
 
-.veda-share-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+.veda-solution-how {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+@media (max-width: 560px) {
+  .veda-solution-how {
+    grid-template-columns: 1fr;
+  }
 }

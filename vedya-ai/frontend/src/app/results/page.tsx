@@ -19,6 +19,7 @@ import ListenButton from "@/components/ListenButton";
 import VoiceMic from "@/components/VoiceMic";
 import CounterfactualPanel from "@/components/CounterfactualPanel";
 import ShareCaseBar, { decodeCaseParam } from "@/components/ShareCaseBar";
+import SolutionPanel from "@/components/SolutionPanel";
 import { useApp } from "@/lib/app-context";
 import Link from "next/link";
 
@@ -344,84 +345,7 @@ function ResultsContent() {
           {t("howToRead")}
         </p>
 
-        {/* 2. Top pick — plain-language card */}
-        {topResult && (
-          <div
-            className="rounded-2xl p-6 mb-4"
-            style={{
-              background: "linear-gradient(165deg, #fff 0%, var(--veda-harita-soft) 140%)",
-              border: "1px solid var(--veda-harita)",
-              boxShadow: "0 10px 28px rgba(12,20,25,0.06)",
-            }}
-          >
-            <div className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--veda-harita)" }}>
-              {t("topRecommendation")}
-            </div>
-            <div className="text-2xl font-medium mb-1" style={{ fontFamily: "var(--font-display)", color: "var(--veda-ink)" }}>
-              {topResult.yoga_name}
-            </div>
-            <div className="text-sm mb-4" style={{ color: "var(--veda-ink-soft)" }}>
-              {[topResult.kalpana, `${t("fitScore")} ${topResult.score.toFixed(1)} / 10`]
-                .filter(Boolean)
-                .join(" · ")}
-            </div>
-
-            {topResult.primary_indications.length > 0 && (
-              <div className="mb-4">
-                <div className="text-xs font-semibold mb-1.5" style={{ color: "var(--veda-tamra)" }}>
-                  {t("matchedConditions")}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {topResult.primary_indications.slice(0, 6).map((ind) => (
-                    <span
-                      key={ind}
-                      className="text-xs px-2.5 py-1 rounded-lg"
-                      style={{ background: "var(--veda-surface)", border: "1px solid var(--veda-shila-deep)", color: "var(--veda-ink)" }}
-                    >
-                      {ind}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {topResult.explanation && (
-              <div className="mb-4">
-                <div className="text-xs font-semibold mb-1.5" style={{ color: "var(--veda-harita)" }}>
-                  {t("whyThis")}
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--veda-ink)" }}>
-                  {topResult.explanation.summary}
-                </p>
-                {topResult.explanation.claims.length > 0 && (
-                  <ul className="mt-3 space-y-1.5" style={{ paddingLeft: "1.1rem" }}>
-                    {topResult.explanation.claims.slice(0, 4).map((c, i) => (
-                      <li key={i} className="text-sm leading-relaxed" style={{ color: "var(--veda-ink-soft)" }}>
-                        {c.text}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-
-            <div className="mb-4">
-              <ListenButton
-                yogaName={topResult.yoga_name}
-                kalpana={topResult.kalpana || ""}
-                summary={topResult.explanation?.summary || ""}
-              />
-            </div>
-            {topResult.references.slice(0, 1).map((r) => (
-              <CitationCard key={r.ref_id} reference={r} />
-            ))}
-            {topResult.differentiation_note && (
-              <p className="mt-3 text-sm italic" style={{ color: "var(--veda-ink-soft)" }}>
-                {topResult.differentiation_note}
-              </p>
-            )}
-          </div>
-        )}
+        {topResult && <SolutionPanel formulation={topResult} />}
 
         <CounterfactualPanel
           baseline={response}
@@ -431,7 +355,7 @@ function ResultsContent() {
           }}
         />
 
-        {/* 3. Compare teaser */}
+        {/* Compare teaser */}
         {activeResults.length >= 2 && (
           <div
             className="rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3"
@@ -464,7 +388,7 @@ function ResultsContent() {
           </div>
         )}
 
-        {/* 4. Full ranked list */}
+        {/* Other ranked options */}
         <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--veda-ink-soft)" }}>
           {t("otherOptions")}
         </h2>
