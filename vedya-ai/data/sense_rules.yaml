@@ -1,0 +1,92 @@
+# VedyaAI — Contextual Sense / Homonym Disambiguation Rules
+# When the same Sanskrit term refers to DIFFERENT dravyas depending on context (yoga),
+# these rules override the default denotation.
+# The entity resolver checks these BEFORE using the default term->concept mapping.
+
+- term: Abhaya
+  default_botanical: "Terminalia chebula"
+  default_common: Haritaki
+  default_actions: [Anulomana, Rasayana, Tridoshahara]
+  context_yoga: Jatyadi Ghrita
+  context_botanical: "Vetiveria zizanioides"
+  context_common: Usheera
+  context_actions: [Sheetala, Vrana Ropana, Dahaghna]
+  explanation: >
+    In most classical texts, 'Abhaya' is a synonym for Haritaki (Terminalia chebula).
+    However, in the specific context of Jatyadi Ghrita (Ashtanga Hrudayam, Uttarasthana 25),
+    'Abhaya' refers to Usheera (Vetiveria zizanioides / Khus root) because of the
+    formulation's wound-healing and cooling (Sheetala) purpose. The cooling, Sheetala
+    property of Vetiver makes contextual sense in a wound-healing ghrita, whereas
+    Haritaki's Ushna Virya would be counterproductive.
+  source: "Ashtanga Hrudayam, Uttarasthana 25 — Jatyadi Ghrita commentary"
+
+- term: Harita
+  default_botanical: "Terminalia chebula"
+  default_common: Haritaki
+  context_yoga: Triphala Churna
+  context_botanical: "Terminalia chebula"
+  context_common: Haritaki
+  explanation: >
+    Harita in Triphala context unambiguously refers to Haritaki. No disambiguation needed;
+    included as a reference rule for completeness.
+  source: "Standard Triphala composition"
+
+- term: Patha
+  default_botanical: "Cissampelos pareira"
+  default_common: Patha
+  context_yoga: Pathyadi Kwath
+  context_botanical: "Terminalia chebula"
+  context_common: Pathya (Haritaki)
+  explanation: >
+    In 'Pathyadi Kwath', the 'Pathya' component refers to Haritaki (Terminalia chebula),
+    not the herb Patha (Cissampelos pareira). 'Pathya' is an honorific synonym for
+    Haritaki meaning 'that which is suitable/wholesome'.
+  source: "Sharngadhara Samhita, Madhyama Khanda"
+
+- term: Shigru
+  default_botanical: "Moringa oleifera"
+  default_common: Moringa / Drumstick
+  context_yoga: any
+  context_botanical: "Moringa oleifera"
+  context_common: Moringa
+  explanation: >
+    Shigru consistently means Moringa oleifera across texts. No context-dependent
+    disambiguation — included as explicit positive rule.
+  source: "Standard Nighantu consensus"
+
+- term: Amrita
+  default_botanical: "Tinospora cordifolia"
+  default_common: Guduchi
+  context_yoga: any
+  context_botanical: "Tinospora cordifolia"
+  context_common: Guduchi
+  explanation: >
+    'Amrita' is the most common synonym for Guduchi (Tinospora cordifolia). In most
+    compound formulations (Amritarishta, Guduchyadi Kashaya), Amrita = Guduchi.
+    Exception: in rare poetic/cosmological contexts 'Amrita' means nectar — always
+    exclude those non-clinical contexts.
+  source: "Dravyaguna — Guduchi synonyms consensus"
+
+- term: Kantakari
+  default_botanical: "Solanum xanthocarpum"
+  default_common: Kantakari
+  context_yoga: Vyaghryadi Kashayam
+  context_botanical: "Solanum xanthocarpum"
+  context_common: Vyaghri / Kantakari
+  explanation: >
+    In Vyaghryadi Kashayam, the primary herb 'Vyaghri' refers to Kantakari
+    (Solanum xanthocarpum). 'Vyaghri' literally means 'tiger-like' and is a synonym
+    for Kantakari because the plant has tiger-stripe markings. The formulation is named
+    after this herb.
+  source: "Sharngadhara Samhita, Madhyama Khanda 2 — Vyaghryadi Kashayam"
+
+- term: Vyaghri
+  default_botanical: "Solanum xanthocarpum"
+  default_common: Kantakari
+  context_yoga: any
+  context_botanical: "Solanum xanthocarpum"
+  context_common: Kantakari
+  explanation: >
+    Vyaghri is a direct synonym for Kantakari (Solanum xanthocarpum) in all compound
+    formulation contexts. This is distinct from the animal 'Vyaghra' (tiger).
+  source: "Dravyaguna — Kantakari synonyms"
