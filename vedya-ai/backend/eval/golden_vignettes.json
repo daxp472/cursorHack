@@ -1,0 +1,407 @@
+{
+  "version": "1.0.0",
+  "description": "Golden vignette test pack for VedyaAI eval harness. Each vignette has pairwise labels, safety expectations, and synonym coverage checks.",
+  "vignettes": [
+    {
+      "id": "GV-01",
+      "name": "Pinasa URTI — core discriminator",
+      "description": "Classic Pinasa (common cold/URTI) vignette. Vyaghryadi must rank above Punarnavadi.",
+      "input": {
+        "symptoms": ["Fever", "Cough", "Common Cold", "Runny nose"],
+        "rogas": ["Jvara", "Kasa", "Pinasa"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_1": "Vyaghryadi Kashayam",
+        "top_k_must_include": ["Vyaghryadi Kashayam", "Punarnavadi Kashayam"],
+        "pairwise": [{"preferred": "Vyaghryadi Kashayam", "over": "Punarnavadi Kashayam"}],
+        "safety_fires": [],
+        "type": "pairwise_discrimination"
+      }
+    },
+    {
+      "id": "GV-02",
+      "name": "Shotha inflammatory — reverse discriminator",
+      "description": "Generalized inflammatory condition. Punarnavadi must rank above Vyaghryadi.",
+      "input": {
+        "symptoms": ["Fever", "Cough", "Edema", "Swelling", "Inflammation"],
+        "rogas": ["Jvara", "Kasa", "Shotha"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_1": "Punarnavadi Kashayam",
+        "top_k_must_include": ["Punarnavadi Kashayam"],
+        "pairwise": [{"preferred": "Punarnavadi Kashayam", "over": "Vyaghryadi Kashayam"}],
+        "safety_fires": [],
+        "type": "pairwise_discrimination"
+      }
+    },
+    {
+      "id": "GV-03",
+      "name": "Diabetic + fever + cough — safety gate",
+      "description": "Diabetic patient. Asava/Arishta and Guda-containing formulations must trigger WARN.",
+      "input": {
+        "symptoms": ["Fever", "Cough"],
+        "rogas": ["Jvara", "Kasa"],
+        "comorbidities": ["Diabetes", "Prameha"]
+      },
+      "expected": {
+        "safety_fires": ["CR-01", "CR-02"],
+        "safety_severity_min": "WARN",
+        "excluded_types": ["Asava/Arishta"],
+        "type": "safety_gate"
+      }
+    },
+    {
+      "id": "GV-04",
+      "name": "Pregnant patient — purgative contraindication",
+      "description": "Pregnant patient. Trivrit/Danti-containing formulations must be HARD_EXCLUDED.",
+      "input": {
+        "symptoms": ["Constipation"],
+        "rogas": ["Vibandha"],
+        "comorbidities": ["Pregnancy", "Garbhini"],
+        "pregnancy": true
+      },
+      "expected": {
+        "safety_fires": ["CR-04"],
+        "safety_severity_min": "HARD_EXCLUDE",
+        "type": "safety_gate"
+      }
+    },
+    {
+      "id": "GV-05",
+      "name": "Synonym resolution — Santapa for Jvara",
+      "description": "Using Santapa (synonym) must retrieve Jvara-linked formulations.",
+      "input": {
+        "symptoms": ["Santapa", "Kasa"],
+        "rogas": [],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_must_include": ["Vyaghryadi Kashayam", "Punarnavadi Kashayam"],
+        "resolved_must_include": ["Jvara"],
+        "type": "synonym_retrieval"
+      }
+    },
+    {
+      "id": "GV-06",
+      "name": "Synonym — Pratishyaya for Pinasa",
+      "description": "Pratishyaya must resolve to Pinasa concept and retrieve Vyaghryadi.",
+      "input": {
+        "symptoms": ["Pratishyaya", "Jvara"],
+        "rogas": [],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_must_include": ["Vyaghryadi Kashayam"],
+        "resolved_must_include": ["Pinasa"],
+        "type": "synonym_retrieval"
+      }
+    },
+    {
+      "id": "GV-07",
+      "name": "Breathlessness + Cough",
+      "description": "Shwasa + Kasa combination. Respiratory formulations should appear.",
+      "input": {
+        "symptoms": ["Breathlessness", "Cough"],
+        "rogas": ["Shwasa", "Kasa"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_must_include": ["Vyaghryadi Kashayam"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-08",
+      "name": "Digestive — Agnimandya",
+      "description": "Loss of appetite and indigestion.",
+      "input": {
+        "symptoms": ["Indigestion", "Loss of appetite"],
+        "rogas": ["Agnimandya"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 3,
+        "category_must_include": ["Digestive System"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-09",
+      "name": "Skin disease — Kushtha",
+      "description": "Chronic skin disease / eczema.",
+      "input": {
+        "symptoms": ["Skin disease", "Eczema"],
+        "rogas": ["Kushtha"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "category_must_include": ["Skin (Twak Roga)"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-10",
+      "name": "Anemia — Pandu",
+      "description": "Iron deficiency anemia.",
+      "input": {
+        "symptoms": ["Anemia", "Weakness"],
+        "rogas": ["Pandu"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-11",
+      "name": "Arthritis — Amavata",
+      "description": "Rheumatoid arthritis / joint pain.",
+      "input": {
+        "symptoms": ["Joint pain", "Arthritis"],
+        "rogas": ["Amavata"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 3,
+        "category_must_include": ["Musculoskeletal System"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-12",
+      "name": "Piles — Arsha",
+      "description": "Hemorrhoids with constipation.",
+      "input": {
+        "symptoms": ["Piles", "Constipation"],
+        "rogas": ["Arsha", "Vibandha"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-13",
+      "name": "Menstrual disorder — Artava Vikara",
+      "description": "Heavy menstrual bleeding.",
+      "input": {
+        "symptoms": ["Menorrhagia", "Menstrual disorder"],
+        "rogas": ["Artava Vikara"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "category_must_include": ["Reproductive System"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-14",
+      "name": "Urinary disorder — Mutra Vikara",
+      "description": "Dysuria and urinary tract issues.",
+      "input": {
+        "symptoms": ["Dysuria", "Urinary disorder"],
+        "rogas": ["Mutra Vikara"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_must_include": ["Punarnavadi Kashayam"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-15",
+      "name": "Liver disorder — Yakrit",
+      "description": "Hepatomegaly and liver enlargement.",
+      "input": {
+        "symptoms": ["Liver disorder", "Hepatomegaly"],
+        "rogas": ["Yakrit Vikara"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-16",
+      "name": "Diabetic + sweetener safety",
+      "description": "Diabetic patient — Avaleha/Leha with Guda should WARN.",
+      "input": {
+        "symptoms": ["Cough"],
+        "rogas": ["Kasa"],
+        "comorbidities": ["Diabetes"]
+      },
+      "expected": {
+        "safety_fires": ["CR-02"],
+        "warned_formulation_types": ["Avaleha/Leha"],
+        "type": "safety_gate"
+      }
+    },
+    {
+      "id": "GV-17",
+      "name": "Wound healing — Vrana",
+      "description": "Non-healing wound / ulcer.",
+      "input": {
+        "symptoms": ["Wound", "Ulcer", "Non-healing"],
+        "rogas": ["Vrana"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_must_include": ["Jatyadi Ghrita"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-18",
+      "name": "Rasayana — general tonic",
+      "description": "General rejuvenation and immunity.",
+      "input": {
+        "symptoms": ["Weakness", "Rejuvenation"],
+        "rogas": ["Rasayana", "Daurbalya"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 3,
+        "category_must_include": ["Rejuvenative (Rasayana)"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-19",
+      "name": "Neurological — Vata Vyadhi",
+      "description": "Paralysis / Vata nervous disorder.",
+      "input": {
+        "symptoms": ["Paralysis", "Neurological"],
+        "rogas": ["Vata Vyadhi"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "category_must_include": ["Nervous System"],
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-20",
+      "name": "Diarrhea — Atisara",
+      "description": "Acute diarrhea / loose stools.",
+      "input": {
+        "symptoms": ["Diarrhea", "Loose stools"],
+        "rogas": ["Atisara"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-21",
+      "name": "Cardiac — Hrid Roga",
+      "description": "Heart disease and palpitation.",
+      "input": {
+        "symptoms": ["Heart disease", "Palpitation"],
+        "rogas": ["Hrid Roga"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 2,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-22",
+      "name": "Worm infestation — Krimi",
+      "description": "Intestinal parasites / worm infestation.",
+      "input": {
+        "symptoms": ["Intestinal worms", "Parasite"],
+        "rogas": ["Krimi"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 1,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-23",
+      "name": "Obesity — Sthoulya",
+      "description": "Obesity / Meda Roga.",
+      "input": {
+        "symptoms": ["Obesity", "Overweight"],
+        "rogas": ["Sthoulya"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_k_min_count": 1,
+        "type": "candidate_recall"
+      }
+    },
+    {
+      "id": "GV-24",
+      "name": "LLM-off pairwise test",
+      "description": "M3 gate: Pinasa discrimination MUST work with LLM disabled.",
+      "input": {
+        "symptoms": ["Pinasa", "Jvara"],
+        "rogas": [],
+        "comorbidities": []
+      },
+      "expected": {
+        "pairwise": [{"preferred": "Vyaghryadi Kashayam", "over": "Punarnavadi Kashayam"}],
+        "requires_llm_off": true,
+        "type": "pairwise_discrimination"
+      }
+    },
+    {
+      "id": "GV-25",
+      "name": "Pregnancy + Asava safety",
+      "description": "Pregnant patient — Asava/Arishta should WARN.",
+      "input": {
+        "symptoms": ["Fever"],
+        "rogas": ["Jvara"],
+        "comorbidities": ["Pregnancy"],
+        "pregnancy": true
+      },
+      "expected": {
+        "safety_fires": ["CR-05"],
+        "safety_severity_min": "WARN",
+        "type": "safety_gate"
+      }
+    },
+    {
+      "id": "GV-26",
+      "name": "Hyperacidity + Katu ingredient warning",
+      "description": "Hyperacidity patient — Trikatu formulations should WARN.",
+      "input": {
+        "symptoms": ["Hyperacidity", "Acid reflux"],
+        "rogas": ["Amlapitta"],
+        "comorbidities": ["Amlapitta", "Hyperacidity"]
+      },
+      "expected": {
+        "safety_fires": ["CR-07"],
+        "type": "safety_gate"
+      }
+    },
+    {
+      "id": "GV-27",
+      "name": "Citation validity check",
+      "description": "Every top-5 result must have at least one reference.",
+      "input": {
+        "symptoms": ["Fever", "Cough"],
+        "rogas": ["Jvara", "Kasa"],
+        "comorbidities": []
+      },
+      "expected": {
+        "top_5_must_have_reference": true,
+        "zero_hallucinated_refs": true,
+        "type": "citation_validity"
+      }
+    }
+  ]
+}
