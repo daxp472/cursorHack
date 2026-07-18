@@ -133,6 +133,29 @@ def _vignette_summary(frame) -> str:
 # ROUTES
 # ─────────────────────────────────────────────────────────────────────────────
 
+@app.get("/meta/comorbidities", tags=["System"])
+async def list_comorbidities(locale: str = Query("en")):
+    """Dynamic comorbidity options from concepts/terms (labels follow locale)."""
+    from pipeline.localize import label_for_canonical, norm_locale
+
+    loc = norm_locale(locale)
+    db = _get_db()
+    seeds = [
+        ("Diabetes", "Prameha"),
+        ("Pregnancy", "Pregnancy"),
+        ("Amlapitta", "Amlapitta"),
+        ("Raktapitta", "Raktapitta"),
+    ]
+    return [
+        {
+            "value": api_value,
+            "label": label_for_canonical(db, canon, loc),
+            "canonical": canon,
+        }
+        for api_value, canon in seeds
+    ]
+
+
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 async def health():
     db_ok = False

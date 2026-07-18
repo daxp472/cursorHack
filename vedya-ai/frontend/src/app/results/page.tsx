@@ -22,15 +22,25 @@ import ShareCaseBar, { decodeCaseParam } from "@/components/ShareCaseBar";
 import { useApp } from "@/lib/app-context";
 import Link from "next/link";
 
-const COMORBIDITIES = ["Diabetes", "Pregnancy", "Amlapitta (Hyperacidity)", "Raktapitta (Bleeding)"];
+const COMORBIDITIES = ["Diabetes", "Pregnancy", "Amlapitta", "Raktapitta"];
 
 function IntakePanel({ onSubmit }: { onSubmit: (inp: VignetteInput) => void }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const [freeText, setFreeText] = useState("");
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [symptomInput, setSymptomInput] = useState("");
   const [selectedComorbs, setSelectedComorbs] = useState<string[]>([]);
+  const [comorbOptions, setComorbOptions] = useState<Array<{ value: string; label: string }>>([]);
   const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    api
+      .comorbidities(locale)
+      .then(setComorbOptions)
+      .catch(() =>
+        setComorbOptions(COMORBIDITIES.map((value) => ({ value, label: value })))
+      );
+  }, [locale]);
 
   function addSymptom() {
     const s = symptomInput.trim();
@@ -44,7 +54,7 @@ function IntakePanel({ onSubmit }: { onSubmit: (inp: VignetteInput) => void }) {
       free_text: freeText || undefined,
       symptoms,
       rogas: [],
-      comorbidities: selectedComorbs.map((c) => c.split(" ")[0]),
+      comorbidities: selectedComorbs,
       top_k: 10,
     });
     setRunning(false);
@@ -112,28 +122,30 @@ function IntakePanel({ onSubmit }: { onSubmit: (inp: VignetteInput) => void }) {
         {t("comorbiditiesLabel")}
       </label>
       <div className="flex flex-wrap gap-3 mb-8">
-        {COMORBIDITIES.map((c) => {
-          const selected = selectedComorbs.includes(c);
-          return (
-            <button
-              key={c}
-              type="button"
-              onClick={() =>
-                setSelectedComorbs((prev) =>
-                  selected ? prev.filter((x) => x !== c) : [...prev, c]
-                )
-              }
-              className="px-4 py-2 rounded-xl text-sm font-medium min-h-[44px] transition-all"
-              style={{
-                background: selected ? "var(--veda-kesar)" : "var(--veda-shila-deep)",
-                color: selected ? "white" : "var(--veda-ink)",
-                border: `1px solid ${selected ? "var(--veda-kesar)" : "var(--veda-fog)"}`,
-              }}
-            >
-              {c}
-            </button>
-          );
-        })}
+        {(comorbOptions.length ? comorbOptions : COMORBIDITIES.map((value) => ({ value, label: value }))).map(
+          (c) => {
+            const selected = selectedComorbs.includes(c.value);
+            return (
+              <button
+                key={c.value}
+                type="button"
+                onClick={() =>
+                  setSelectedComorbs((prev) =>
+                    selected ? prev.filter((x) => x !== c.value) : [...prev, c.value]
+                  )
+                }
+                className="px-4 py-2 rounded-xl text-sm font-medium min-h-[44px] transition-all"
+                style={{
+                  background: selected ? "var(--veda-kesar)" : "var(--veda-shila-deep)",
+                  color: selected ? "white" : "var(--veda-ink)",
+                  border: `1px solid ${selected ? "var(--veda-kesar)" : "var(--veda-fog)"}`,
+                }}
+              >
+                {c.label}
+              </button>
+            );
+          }
+        )}
       </div>
 
       <PrimaryButton
@@ -328,11 +340,19 @@ function ResultsContent() {
         {/* 1. Safety panel */}
         {globalAlerts.length > 0 && <SafetyPanel violations={globalAlerts} />}
 
-        {/* 2. Top pick */}
+        <p className="text-xs mb-4 leading-relaxed" style={{ color: "var(--veda-ink-soft)" }}>
+          {t("howToRead")}
+        </p>
+
+        {/* 2. Top pick — plain-language card */}
         {topResult && (
           <div
             className="rounded-2xl p-6 mb-4"
-            style={{ background: "var(--veda-surface)", border: "1px solid var(--veda-harita-soft)" }}
+            style={{
+              background: "linear-gradient(165deg, #fff 0%, var(--veda-harita-soft) 140%)",
+              border: "1px solid var(--veda-harita)",
+              boxShadow: "0 10px 28px rgba(12,20,25,0.06)",
+            }}
           >
             <div className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--veda-harita)" }}>
               {t("topRecommendation")}
@@ -340,14 +360,51 @@ function ResultsContent() {
             <div className="text-2xl font-medium mb-1" style={{ fontFamily: "var(--font-display)", color: "var(--veda-ink)" }}>
               {topResult.yoga_name}
             </div>
-            <div className="text-sm mb-3" style={{ color: "var(--veda-ink-soft)" }}>
-              {topResult.kalpana} · {t("fitScore")}: {topResult.score.toFixed(1)}
+            <div className="text-sm mb-4" style={{ color: "var(--veda-ink-soft)" }}>
+              {[topResult.kalpana, `${t("fitScore")} ${topResult.score.toFixed(1)} / 10`]
+                .filter(Boolean)
+                .join(" · ")}
             </div>
-            {topResult.explanation && (
-              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--veda-ink)" }}>
-                {topResult.explanation.summary}
-              </p>
+
+            {topResult.primary_indications.length > 0 && (
+              <div className="mb-4">
+                <div className="text-xs font-semibold mb-1.5" style={{ color: "var(--veda-tamra)" }}>
+                  {t("matchedConditions")}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {topResult.primary_indications.slice(0, 6).map((ind) => (
+                    <span
+                      key={ind}
+                      className="text-xs px-2.5 py-1 rounded-lg"
+                      style={{ background: "var(--veda-surface)", border: "1px solid var(--veda-shila-deep)", color: "var(--veda-ink)" }}
+                    >
+                      {ind}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {topResult.explanation && (
+              <div className="mb-4">
+                <div className="text-xs font-semibold mb-1.5" style={{ color: "var(--veda-harita)" }}>
+                  {t("whyThis")}
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--veda-ink)" }}>
+                  {topResult.explanation.summary}
+                </p>
+                {topResult.explanation.claims.length > 0 && (
+                  <ul className="mt-3 space-y-1.5" style={{ paddingLeft: "1.1rem" }}>
+                    {topResult.explanation.claims.slice(0, 4).map((c, i) => (
+                      <li key={i} className="text-sm leading-relaxed" style={{ color: "var(--veda-ink-soft)" }}>
+                        {c.text}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
             <div className="mb-4">
               <ListenButton
                 yogaName={topResult.yoga_name}
@@ -408,6 +465,9 @@ function ResultsContent() {
         )}
 
         {/* 4. Full ranked list */}
+        <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--veda-ink-soft)" }}>
+          {t("otherOptions")}
+        </h2>
         <div className="space-y-2">
           {response.results.map((r, idx) => (
             <RankRow

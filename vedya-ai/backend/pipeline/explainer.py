@@ -22,128 +22,135 @@ def _norm_locale(locale: str | None) -> str:
 
 def _recommend_system(locale: str) -> str:
     lang = _LOCALE_NAMES.get(locale, "English")
-    return f"""You are a classical Ayurvedic clinical educator.
-Given an Evidence Pack for a formulation, explain WHY it is recommended for the patient's conditions.
-Your explanation must:
-1. Be grounded ONLY in the evidence pack provided.
-2. Reference citations using their ref_id (format: [ref_id]).
-3. Output ONLY valid JSON: {{"summary": "...", "claims": [{{"text": "...", "ref_ids": ["..."]}}]}}
-4. Never invent new formulations, ingredients, or references.
-5. If evidence is insufficient, say so honestly.
-6. Write the summary and claim texts in {lang}. Keep classical Sanskrit yoga names unchanged."""
+    return f"""You are a classical Ayurvedic clinical educator speaking to students.
+Given an Evidence Pack, explain WHY this formulation fits the patient in clear {lang}.
+Rules:
+1. Ground ONLY in the evidence pack. Never invent yogas, herbs, or citations.
+2. Cite with [ref_id] when available.
+3. Output ONLY JSON: {{"summary":"2-3 plain sentences","claims":[{{"text":"...","ref_ids":["..."]}}]}}
+4. Structure the summary as: (1) top pick name, (2) why it fits this case, (3) classical source if present.
+5. Keep Sanskrit yoga names unchanged. Prefer everyday clinical wording over jargon."""
 
 
 def _compare_system(locale: str) -> str:
     lang = _LOCALE_NAMES.get(locale, "English")
-    return f"""You are a classical Ayurvedic clinical educator.
-Compare two formulations (A and B) for a patient vignette and explain which is more appropriate.
-Ground every claim in the evidence packs. Output ONLY valid JSON:
-{{"summary": "...", "claims": [{{"text": "...", "ref_ids": ["..."]}}], "winner": "A or B", "winner_reason": "one sentence"}}
-Never invent references.
-Write summary, claims, and winner_reason in {lang}. Keep classical Sanskrit yoga names unchanged."""
+    return f"""You are a classical Ayurvedic clinical educator speaking to students.
+Compare formulation A vs B for this vignette in clear {lang}.
+Output ONLY JSON:
+{{"summary":"plain comparison","claims":[{{"text":"...","ref_ids":["..."]}}],"winner":"A or B","winner_reason":"one clear sentence"}}
+Ground every claim in the evidence packs. Never invent references.
+Keep Sanskrit yoga names unchanged."""
 
 
 def _template_explanation(pack: EvidencePack, locale: str = "en") -> Explanation:
-    """Deterministic template explanation — used when LLM is off or fails."""
+    """Plain-language template — clear for classroom demos when LLM is off."""
     ref_ids = [r.ref_id for r in pack.references if r.ref_id]
-    primary_str = ", ".join(pack.primary_indications[:3]) if pack.primary_indications else ""
-    secondary_str = ", ".join(pack.secondary_indications[:3]) if pack.secondary_indications else ""
-    ingredient_str = ", ".join(pack.ingredients[:4]) if pack.ingredients else ""
+    primary = [p for p in (pack.primary_indications or []) if p][:4]
+    secondary = [p for p in (pack.secondary_indications or []) if p][:3]
+    ingredients = [i for i in (pack.ingredients or []) if i][:5]
     work = pack.references[0].work if pack.references else ""
+    chapter = pack.references[0].chapter if pack.references else ""
     kalpana = pack.kalpana or ""
+    primary_str = ", ".join(primary)
+    ingredient_str = ", ".join(ingredients)
 
     if locale == "hi":
-        primary_str = primary_str or "उल्लिखित स्थितियाँ"
-        ingredient_str = ingredient_str or "इसके अवयव द्रव्य"
-        work = work or "शास्त्रीय ग्रंथ"
-        kalpana = kalpana or "कषाय"
-        claims = [
-            ExplanationClaim(
-                text=f"{pack.yoga_name} मुख्य रूप से {primary_str} में इंगित है।",
-                ref_ids=ref_ids[:1],
-            )
-        ]
-        if secondary_str:
+        claims = []
+        why = (
+            f"इस केस के लिए {pack.yoga_name} सबसे उपयुक्त दिखता है"
+            + (f" क्योंकि यह मुख्यतः {primary_str} में इंगित है।" if primary_str else "।")
+        )
+        claims.append(ExplanationClaim(text=why, ref_ids=ref_ids[:1]))
+        if ingredient_str:
             claims.append(
                 ExplanationClaim(
-                    text=f"इसके घटक ({ingredient_str}) {secondary_str} के लिए अतिरिक्त आवरण देते हैं।",
+                    text=f"मुख्य द्रव्य: {ingredient_str}"
+                    + (f" — ये {', '.join(secondary)} में भी सहायक हो सकते हैं।" if secondary else "।"),
                     ref_ids=ref_ids[:1],
                 )
             )
+        if work:
+            src = f"शास्त्रीय आधार: {work}" + (f" ({chapter})" if chapter else "") + "।"
+            claims.append(ExplanationClaim(text=src, ref_ids=ref_ids[:1]))
         if pack.safety_violations:
             claims.append(
                 ExplanationClaim(
-                    text="सुरक्षा ध्यान दें: " + "; ".join(v.message[:80] for v in pack.safety_violations),
+                    text="सुरक्षा: " + "; ".join(v.message[:100] for v in pack.safety_violations),
                     ref_ids=[],
                 )
             )
-        if pack.differentiation_note:
-            claims.append(ExplanationClaim(text=pack.differentiation_note, ref_ids=ref_ids[:1]))
         summary = (
-            f"{pack.yoga_name} ({kalpana}) एक शास्त्रीय योग है, "
-            f"जो {primary_str} के लिए उपयुक्त है; संदर्भ: {work}।"
+            f"शीर्ष योग: {pack.yoga_name}"
+            + (f" ({kalpana})" if kalpana else "")
+            + "। "
+            + why
+            + (f" स्रोत: {work}." if work else "")
         )
     elif locale == "gu":
-        primary_str = primary_str or "ઉલ્લેખિત સ્થિતિઓ"
-        ingredient_str = ingredient_str or "તેના ઘટક દ્રવ્યો"
-        work = work or "શાસ્ત્રીય ગ્રંથ"
-        kalpana = kalpana or "કષાય"
-        claims = [
-            ExplanationClaim(
-                text=f"{pack.yoga_name} મુખ્યત્વે {primary_str} માટે સૂચવાય છે.",
-                ref_ids=ref_ids[:1],
-            )
-        ]
-        if secondary_str:
+        claims = []
+        why = (
+            f"આ કેસ માટે {pack.yoga_name} સૌથી યોગ્ય દેખાય છે"
+            + (f" કારણ કે તે મુખ્યત્વે {primary_str} માટે સૂચવાય છે." if primary_str else ".")
+        )
+        claims.append(ExplanationClaim(text=why, ref_ids=ref_ids[:1]))
+        if ingredient_str:
             claims.append(
                 ExplanationClaim(
-                    text=f"તેના ઘટકો ({ingredient_str}) {secondary_str} માટે વધારાનું આવરણ આપે છે.",
+                    text=f"મુખ્ય ઘટકો: {ingredient_str}"
+                    + (f" — આ {', '.join(secondary)} માં પણ મદદરૂપ થઈ શકે." if secondary else "."),
                     ref_ids=ref_ids[:1],
                 )
             )
+        if work:
+            src = f"શાસ્ત્રીય આધાર: {work}" + (f" ({chapter})" if chapter else "") + "."
+            claims.append(ExplanationClaim(text=src, ref_ids=ref_ids[:1]))
         if pack.safety_violations:
             claims.append(
                 ExplanationClaim(
-                    text="સુરક્ષા નોંધ: " + "; ".join(v.message[:80] for v in pack.safety_violations),
+                    text="સુરક્ષા: " + "; ".join(v.message[:100] for v in pack.safety_violations),
                     ref_ids=[],
                 )
             )
-        if pack.differentiation_note:
-            claims.append(ExplanationClaim(text=pack.differentiation_note, ref_ids=ref_ids[:1]))
         summary = (
-            f"{pack.yoga_name} ({kalpana}) એક શાસ્ત્રીય યોગ છે, "
-            f"જે {primary_str} માટે યોગ્ય છે; સંદર્ભ: {work}."
+            f"ટોચનો યોગ: {pack.yoga_name}"
+            + (f" ({kalpana})" if kalpana else "")
+            + ". "
+            + why
+            + (f" સ્ત્રોત: {work}." if work else "")
         )
     else:
-        primary_str = primary_str or "the stated conditions"
-        ingredient_str = ingredient_str or "its constituent herbs"
-        work = work or "classical texts"
-        kalpana = kalpana or "decoction"
-        claims = [
-            ExplanationClaim(
-                text=f"{pack.yoga_name} is indicated in {primary_str}.",
-                ref_ids=ref_ids[:1],
-            )
-        ]
-        if secondary_str:
+        claims = []
+        why = (
+            f"{pack.yoga_name} is the strongest match for this case"
+            + (f" because it is classically indicated for {primary_str}." if primary_str else ".")
+        )
+        claims.append(ExplanationClaim(text=why, ref_ids=ref_ids[:1]))
+        if ingredient_str:
             claims.append(
                 ExplanationClaim(
-                    text=f"Its constituent herbs ({ingredient_str}) provide additional coverage for {secondary_str}.",
+                    text=f"Key herbs: {ingredient_str}"
+                    + (f" — also support {', '.join(secondary)}." if secondary else "."),
                     ref_ids=ref_ids[:1],
                 )
             )
+        if work:
+            src = f"Classical basis: {work}" + (f" ({chapter})" if chapter else "") + "."
+            claims.append(ExplanationClaim(text=src, ref_ids=ref_ids[:1]))
         if pack.safety_violations:
             claims.append(
                 ExplanationClaim(
-                    text="Note safety considerations: " + "; ".join(v.message[:80] for v in pack.safety_violations),
+                    text="Safety: " + "; ".join(v.message[:100] for v in pack.safety_violations),
                     ref_ids=[],
                 )
             )
         if pack.differentiation_note:
             claims.append(ExplanationClaim(text=pack.differentiation_note, ref_ids=ref_ids[:1]))
         summary = (
-            f"{pack.yoga_name} ({kalpana}) is a classical formulation "
-            f"indicated for {primary_str}, referenced in {work}."
+            f"Top pick: {pack.yoga_name}"
+            + (f" ({kalpana})" if kalpana else "")
+            + ". "
+            + why
+            + (f" Source: {work}." if work else "")
         )
 
     return Explanation(

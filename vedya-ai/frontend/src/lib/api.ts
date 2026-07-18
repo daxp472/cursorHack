@@ -259,6 +259,11 @@ export const api = {
       messages: Array<{ role: string; content_text: string; payload?: RecommendationResponse }>;
     }>(`/conversations/${id}`),
 
+  comorbidities: (locale = "en") =>
+    apiFetch<Array<{ value: string; label: string; canonical: string }>>(
+      `/meta/comorbidities?locale=${encodeURIComponent(locale)}`
+    ),
+
   voiceStatus: () =>
     apiFetch<{
       configured: boolean;
