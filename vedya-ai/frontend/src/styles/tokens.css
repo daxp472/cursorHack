@@ -1,0 +1,84 @@
+/* VedyaAI Design Tokens — §17.10 */
+/* Cool mineral clinic — NOT cream paper. Semantic signals over brand candy. */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600&display=swap');
+
+:root {
+  /* ── Page Surface ── */
+  --veda-shila:        #EEF1F0;   /* page canvas — cool stone mist */
+  --veda-shila-deep:   #E2E7E5;   /* subtle section alternate / intake wells */
+  --veda-surface:      #F7F9F8;   /* elevated interactive surfaces */
+
+  /* ── Text ── */
+  --veda-ink:          #0C1419;   /* primary text, dark chambers */
+  --veda-ink-soft:     #3A474E;   /* secondary text */
+  --veda-fog:          #9AA6A1;   /* borders, disabled, meta */
+
+  /* ── Brand / Action ── */
+  --veda-harita:       #1B5F4A;   /* primary CTA / fit / positive rank cue */
+  --veda-harita-soft:  #D8EDE4;   /* soft success / selected row wash */
+
+  /* ── Safety / Danger ── */
+  --veda-agni:         #B42318;   /* SAFETY GATE ONLY — hard flags */
+  --veda-agni-soft:    #F9E4E1;   /* safety panel background */
+
+  /* ── Warning ── */
+  --veda-kesar:        #B86E16;   /* warnings / soft constraints */
+  --veda-kesar-soft:   #FDF0DC;   /* warning panel background */
+
+  /* ── Citation / Reference ── */
+  --veda-tamra:        #7A5340;   /* citation / reference accent (sparse) */
+  --veda-tamra-soft:   #F0E7E0;   /* reference card wash */
+
+  /* ── Layout ── */
+  --veda-radius-sm:    8px;
+  --veda-radius:       12px;
+  --veda-radius-lg:    16px;
+  --veda-max-w:        1120px;
+  --veda-compare-max-w: 1280px;
+
+  /* ── Typography ── */
+  --font-display:      'Fraunces', Georgia, serif;
+  --font-ui:           'Manrope', system-ui, sans-serif;
+  --font-devanagari:   'Noto Serif Devanagari', serif;
+}
+
+/* ── Base resets ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: var(--veda-shila);
+  color: var(--veda-ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography helpers ── */
+.font-display    { font-family: var(--font-display); }
+.font-ui         { font-family: var(--font-ui); }
+.font-devanagari { font-family: var(--font-devanagari); }
+
+/* ── Utility classes ── */
+.text-ink      { color: var(--veda-ink); }
+.text-soft     { color: var(--veda-ink-soft); }
+.text-fog      { color: var(--veda-fog); }
+.text-harita   { color: var(--veda-harita); }
+.text-agni     { color: var(--veda-agni); }
+.text-kesar    { color: var(--veda-kesar); }
+.text-tamra    { color: var(--veda-tamra); }
+
+.bg-shila      { background-color: var(--veda-shila); }
+.bg-surface    { background-color: var(--veda-surface); }
+.bg-harita     { background-color: var(--veda-harita); }
+.bg-harita-soft { background-color: var(--veda-harita-soft); }
+.bg-agni-soft  { background-color: var(--veda-agni-soft); }
+.bg-kesar-soft { background-color: var(--veda-kesar-soft); }
+.bg-tamra-soft { background-color: var(--veda-tamra-soft); }
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--veda-harita);
+  outline-offset: 2px;
+}
