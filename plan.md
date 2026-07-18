@@ -1,7 +1,7 @@
 # VedyaAI — Master Architecture & Product Plan
 
-> **Version:** 2.0 (Architecture Review & Enhancement)  
-> **Supersedes:** Version 1.0 (2026-07-18 initial plan)  
+> **Version:** 2.1 (Architecture Review & Enhancement + UI Design System)  
+> **Supersedes:** Version 2.0 (2026-07-18)  
 > **Document status:** Ready for dual-architect re-review  
 > **Deliverable scope:** Planning only — no implementation until approved  
 > **Last updated:** 2026-07-18
@@ -262,6 +262,7 @@ This section records a formal self-review of Version 1 before enhancement. Score
 - Knowledge ontology & data lifecycle
 - Explicit **anti-agent-swarm** decision (pipeline with modules)
 - UX information architecture
+- Visual design system (original; craft-inspired, non-clone)
 - TDRs for every major choice
 - Startup + monetization path
 - Formal final architecture audit
@@ -1410,7 +1411,10 @@ Punarnavadi vs Vyaghryadi must fall out of **secondary indication weights**, not
 
 ## 17. User Experience Design
 
-### 17.1 Design principles
+> **Status:** IA (§17.1–17.7) + Visual & interaction system (§17.8–17.18)  
+> **North star:** Feel as polished and effortless as best-in-class consumer tools (e.g. Wispr Flow’s craft bar) — **without copying** their palette, type, layout, or brand metaphors.
+
+### 17.1 Product UX principles
 
 1. **Workbench not chat theater**  
 2. **Compare is the hero**  
@@ -1418,6 +1422,9 @@ Punarnavadi vs Vyaghryadi must fall out of **secondary indication weights**, not
 4. **Citations adjacent to claims**  
 5. **Honesty about missing data**  
 6. **Teaching moments without clutter**  
+7. **One job per screen** — no dashboard soup in the first viewport  
+8. **OPD-speed clarity** — a junior clinician should reach a defensible shortlist in ≤60s  
+9. **Student learning without overwhelm** — progressive disclosure; depth on demand  
 
 ### 17.2 Information architecture
 
@@ -1442,7 +1449,7 @@ App Shell
 
 ### 17.3 Screen hierarchy (MVP)
 
-1. **Home/Demo** — presets + short value prop + disclaimer  
+1. **Home/Demo** — brand + one line value + presets + disclaimer (nothing else)  
 2. **Intake** — symptoms, profile constraints  
 3. **Results** — ranked yogas + safety summary  
 4. **Compare** — side-by-side discrimination  
@@ -1470,6 +1477,7 @@ VedyaAI assists **after** provisional framing, not instead of examination. Copy 
 - Persistent case summary chip (symptoms + comorbidities)  
 - Always-on disclaimer footer  
 - One-click reset to presets for demos  
+- Back always restores case state (never lose intake on Compare ↔ Results)  
 
 ### 17.7 Content hierarchy on Results
 
@@ -1478,6 +1486,253 @@ VedyaAI assists **after** provisional framing, not instead of examination. Copy 
 3. Why this over #2 (teaser linking to Compare)  
 4. Full ranked list  
 5. Learning/synonym drawer  
+
+---
+
+### 17.8 Inspiration audit — what to learn vs what never to copy
+
+Reference craft bar (Wispr Flow and similar editorial-consumer AI brands) is **quality inspiration only**. Judges and users notice polish; they also notice clones.
+
+| Steal the *craft* (allowed) | Never steal the *identity* (forbidden) |
+|-----------------------------|----------------------------------------|
+| Restraint: 4–5 working colors max | Lumen Cream `#ffffeb` / lavender CTA `#f0d7ff` / Forest Ink `#034f46` / Ember `#ffa946` |
+| One obvious primary action per view | EB Garamond + Figtree pairing |
+| Generous whitespace & quiet confidence | 40–80px “pebble” radii as brand signature |
+| Soft motion for pacing, not decoration | Editorial broadsheet / Sunday-magazine layout |
+| Warmth without clinical sterility | “Voice in Motion” metaphor, lifestyle hero photography |
+| Light ↔ dark chamber contrast for hierarchy | Copying their marketing page structure |
+
+**Anti-clone tests (must pass before ship):**
+
+1. **Screenshot test** — blur brand wordmark: does it still look like Wispr / another AI dictation brand? → fail.  
+2. **Palette test** — if someone names “cream + lavender + forest teal,” we failed.  
+3. **Layout test** — if first viewport could be a lifestyle SaaS landing after deleting Ayurveda copy → fail.  
+4. **Job test** — if removing Compare / Safety / Citations still “looks fine,” the UI is decorative, not VedyaAI.
+
+---
+
+### 17.9 VedyaAI visual thesis (our own big idea)
+
+> **Big idea: *Viveka under good light***  
+> Discrimination (viveka) should feel like placing two yogas on a clean examination surface under calm, even light — not like chatting with a model, and not like reading a lifestyle magazine.
+
+**Emotional targets**
+
+| Feeling | How UI earns it |
+|---------|-----------------|
+| Trust | Citations next to claims; missing data said plainly; no confidence theater |
+| Calm speed | Sparse chrome; large tap targets; presets for demos |
+| Classical gravity | One expressive display face for brand + Sanskrit names only |
+| Clinical clarity | Semantic color for safety / fit / cite — never decorative rainbow |
+| Teachability | Compare and Learn as first-class rooms, not buried tabs |
+
+**Explicit anti-patterns (also match hackathon design hygiene)**
+
+- No purple-on-white / purple→indigo AI gradient themes  
+- No warm cream paper + high-contrast serif + terracotta “AI wellness” default  
+- No broadsheet hairline columns / newspaper density  
+- No card soup in the hero; cards only when they contain an interaction  
+- No glow, emoji decoration, or multi-layer shadow stacks  
+- No chat-bubble product metaphor as the primary surface  
+
+---
+
+### 17.10 Color system (original — CSS tokens)
+
+Cool mineral clinic — **not** cream paper. Semantic signals over brand candy.
+
+| Token | Hex | Role |
+|-------|-----|------|
+| `--veda-shila` | `#EEF1F0` | Page canvas (cool stone mist) |
+| `--veda-shila-deep` | `#E2E7E5` | Subtle section alternate / intake wells |
+| `--veda-ink` | `#0C1419` | Primary text, dark chambers |
+| `--veda-ink-soft` | `#3A474E` | Secondary text |
+| `--veda-fog` | `#9AA6A1` | Borders, disabled, meta |
+| `--veda-surface` | `#F7F9F8` | Elevated interactive surfaces |
+| `--veda-harita` | `#1B5F4A` | Primary CTA / “fit” / positive rank cue |
+| `--veda-harita-soft` | `#D8EDE4` | Soft success / selected row wash |
+| `--veda-agni` | `#B42318` | **Safety gate only** (hard flags) |
+| `--veda-agni-soft` | `#F9E4E1` | Safety panel background |
+| `--veda-kesar` | `#B86E16` | Warnings / soft constraints (not hard exclude) |
+| `--veda-tamra` | `#7A5340` | Citation / reference accent (sparse) |
+| `--veda-tamra-soft` | `#F0E7E0` | Reference card wash |
+
+**Usage rules**
+
+1. **Agni** never used for marketing CTAs — only safety / exclude.  
+2. **Harita** is the single primary action color (Run case, Open Compare, Apply preset).  
+3. **Tamra** appears only on reference chips and citation borders.  
+4. Dark chambers (`--veda-ink`) used for Compare header strip or Demo stage — max one dark band per screen.  
+5. WCAG AA minimum for text; safety text always on soft wash, never thin red on mist alone.
+
+---
+
+### 17.11 Typography
+
+| Role | Face | Why |
+|------|------|-----|
+| Brand / display (sparingly) | **Fraunces** (optical sizes) | Classical presence without EB Garamond clone; soft, scholarly |
+| Product UI | **Manrope** | Fast OPD scanning; excellent numerals for scores |
+| Devanagari | **Noto Serif Devanagari** | Authentic Sanskrit rendering |
+| IAST / Latin body | Manrope; display names may use Fraunces at ≥24px only |
+
+**Type scale (MVP)**
+
+- Brand lockup: Fraunces 32–40 / medium  
+- Screen title: Manrope 22–24 / semibold  
+- Yoga name: Fraunces 20 or Manrope 18 semibold (pick one convention and keep it)  
+- Body: Manrope 15–16 / regular, line-height 1.5  
+- Meta / citations: Manrope 12–13 / medium  
+- Score: Manrope tabular nums, semibold  
+
+**Rule:** Display serif appears in ≤3 places per screen (brand, yoga title, optional teaching epigraph). Everything interactive stays Manrope.
+
+---
+
+### 17.12 Layout, spacing & shape
+
+**Composition model:** single workbench column on mobile; **Intake | Results** split on ≥1100px desktop — not a marketing broadsheet.
+
+| Token | Value |
+|-------|-------|
+| Page margin | 20px mobile / 40–56px desktop |
+| Section gap | 32–48px |
+| Control radius | **12–16px** (purposeful, not pebble-giant) |
+| Rank row radius | 12px |
+| Safety panel | 16px radius, full-bleed soft wash — no floating sticker |
+| Max content width | 1120px workbench; Compare can go 1280px |
+
+**First viewport budget (Home/Demo)**
+
+Only: **VedyaAI** wordmark · one headline · one supporting sentence · CTA group (presets / New case) · quiet atmosphere (subtle mineral texture or soft botanical silhouette as *background plane*, edge-to-edge — not an inset card image).  
+No stats, no feature grids, no schedule strips, no floating badges on the hero.
+
+---
+
+### 17.13 Interaction & motion (2–3 intentional motions)
+
+Motion exists to show **state change in reasoning**, not delight for its own sake.
+
+1. **Rank settle** — list rows fade/slide in top→bottom (~180ms stagger) after ranker returns.  
+2. **Safety gate** — safety panel expands once with a short height transition; hard-flagged rows dim (opacity), never vanish without explanation.  
+3. **Compare enter** — A|B columns crossfade from Results selection; shared case chip stays pinned.
+
+No parallax, no blob gradients, no continuous ambient animation on results (OPD distraction).
+
+---
+
+### 17.14 Screen-by-screen UI spec (ease & perfection)
+
+#### A. Home / Demo
+
+- Brand-first: “VedyaAI” is the loudest mark; headline supports, never overpowers.  
+- Three preset tiles max (named clinical vignettes), large hit areas.  
+- Disclaimer as calm footer line, not a scary modal on load.  
+- Primary CTA: **Open preset** (Harita). Secondary: **New case** (ink outline).
+
+#### B. Intake
+
+- One column: free-text vignette → structured chips (symptoms resolved) → profile constraints.  
+- Comorbidity toggles are large and labeled in plain language (“Diabetes / Prameha”).  
+- Resolved terms appear as removable chips *before* Run — user corrects sense early (homonym UX).  
+- Primary CTA sticky bottom on mobile: **Discriminate** / **Rank formulations**.  
+- Empty state: one example vignette ghost text, not a blank form panic.
+
+#### C. Results (perfection path)
+
+Order is non-negotiable (matches §17.7):
+
+1. **Safety panel** (if any flags) — Agni wash; each flag names ingredient/medium + rule.  
+2. **Top pick** — name, kalpana, fit score, one-line “why”.  
+3. **Compare teaser** — “Why this over #2?” → one Harita button.  
+4. **Full list** — rank, name, score, mini safety dot.  
+5. **Coverage honesty** — “Properties missing for N yogas” if sparse.  
+6. **Learn** drawer affordance — synonym map.
+
+Keyboard: `C` opens Compare for top-2; `1–9` focus rank rows (demo flex).
+
+#### D. Compare (hero room)
+
+- Two equal columns; sticky headers with yoga names.  
+- Rows aligned as **discrimination features** (indication overlap, secondary fit, medium, safety, citation strength) — not two unrelated product cards.  
+- Winner cue is subtle Harita edge, not confetti.  
+- Footer: “Human judgment required” + link to Detail refs.
+
+#### E. Detail
+
+- Property grid only for **known** fields; null → “Not in corpus” (never LLM-filled).  
+- Ingredients list with safety highlights inherited from case.  
+- References as Tamra-accent cards: work, locus, optional excerpt.
+
+#### F. Learn
+
+- Synonym map as simple linked terms (Jvara ↔ Santapa).  
+- One teaching paragraph bound to evidence pack — not a blog.
+
+---
+
+### 17.15 Component inventory (MVP)
+
+| Component | Behavior |
+|-----------|----------|
+| `CaseChip` | Sticky summary; click to edit intake |
+| `PresetCard` | One vignette; loads golden path |
+| `TermChip` | Resolved entity; overflow menu for sense pick |
+| `SafetyPanel` | Hard/soft flags; expands first on Results |
+| `RankRow` | Score + name + kalpana + safety dot |
+| `CompareTable` | Feature-aligned A|B |
+| `CitationCard` | Tamra accent; copy locus |
+| `CoverageNote` | Honest sparsity |
+| `DisclaimerBar` | Persistent educational framing |
+| `PrimaryButton` | Harita fill; one per view |
+
+---
+
+### 17.16 Microcopy principles (user ease)
+
+- Verbs = clinical jobs: **Rank**, **Compare**, **Review safety**, not “Generate magic.”  
+- Scores labeled **Fit (corpus + constraints)** — never “AI confidence %.”  
+- Unsafe: **Unsuitable under current constraints** — not “Bad medicine.”  
+- Empty/missing: **Not available in corpus** — never invent.  
+- Global: **Educational decision support — not a diagnosis or prescription.**
+
+---
+
+### 17.17 Accessibility & responsive
+
+- Tap targets ≥44px; comorbidity toggles especially.  
+- Don’t rely on color alone for safety — icon + text “Excluded”.  
+- Focus rings visible on Harita/ink buttons.  
+- Mobile: single column; Compare becomes stacked A then B with “Swap” sticky.  
+- Projector/faculty mode: 120% type scale toggle for classroom.
+
+---
+
+### 17.18 Hackathon UI acceptance checklist
+
+- [ ] Passes all four anti-clone tests (§17.8)  
+- [ ] Tokens match §17.10 (no cream/lavender/purple defaults)  
+- [ ] Home first viewport within hero budget (§17.12)  
+- [ ] Results order: Safety → Top → Compare teaser → List  
+- [ ] Compare is feature-aligned, not two cards  
+- [ ] Missing data never hallucinated in UI  
+- [ ] Demo presets one-click; case chip + reset work  
+- [ ] 2–3 motions only (§17.13); none continuous on Results  
+- [ ] Disclaimer always visible  
+- [ ] Works on laptop + phone for student persona  
+
+---
+
+### 17.19 Design ownership & freeze
+
+| Artifact | Owner | Freeze gate |
+|----------|-------|-------------|
+| Tokens (`veda-*.css` or Tailwind theme) | Frontend lead | Before Results polish |
+| Figma / rough wire of Compare | Frontend + domain | Before demo week |
+| Microcopy sheet | PM + domain | With golden vignettes |
+| Anti-clone review | Whole team | 48h before submit |
+
+UI polish **must not** block ranker/eval (see §21 critical path). Visual system can be tokenized early while screens stay wire-simple until M3.
 
 ---
 
@@ -1854,7 +2109,7 @@ UI must not block ranker. LLM must not block ranker.
 
 ### Audit conclusion
 
-V2 is materially stronger than V1: market map, ontology, data ops, AI decision rights, anti-swarm rationale, UX IA, TDRs, demo psychology, and venture path are now present. The core thesis is unchanged and sharper.
+V2 is materially stronger than V1: market map, ontology, data ops, AI decision rights, anti-swarm rationale, UX IA, TDRs, demo psychology, and venture path are now present. V2.1 adds an original visual/interaction system (§17.8–17.19) with explicit anti-clone craft rules. The core thesis is unchanged and sharper.
 
 **Go / No-Go for implementation:** Conditional **Go** after open questions 1–5 and 9 are answered by the team.
 
@@ -1867,8 +2122,8 @@ V2 is materially stronger than V1: market map, ontology, data ops, AI decision r
 3. Freeze golden vignettes (must include Punarnavadi vs Vyaghryadi).  
 4. Implement schema + safety + ranker **before** LLM explanation.  
 5. Hit M3 gate (ranker correct without LLM).  
-6. Only then explain + UI polish + demo fallback.  
-7. Mid-build re-audit against §26 critiques.
+6. Only then explain + UI polish + demo fallback (freeze tokens from §17.10 early; full polish after M3).  
+7. Mid-build re-audit against §26 critiques + §17.18 UI checklist.
 
 ---
 
@@ -1878,8 +2133,8 @@ V2 is materially stronger than V1: market map, ontology, data ops, AI decision r
 |-------|-------|
 | Product | VedyaAI |
 | Artifact | `plan.md` |
-| Version | **2.0** |
-| Supersedes | 1.0 |
+| Version | **2.1** |
+| Supersedes | 2.0 |
 | Phase | Planning / pre-implementation |
 | Implementation status | **Blocked until plan approval** |
 | Reviewers | Team + secondary AI architect (ChatGPT) + domain spot-check |
@@ -1890,7 +2145,8 @@ V2 is materially stronger than V1: market map, ontology, data ops, AI decision r
 |---------|------|---------|
 | 1.0 | 2026-07-18 | Initial architecture & product plan |
 | 2.0 | 2026-07-18 | Formal self-review; market, ontology, data lifecycle, AI decision rights, agent decision, UX IA, TDRs, demo psychology, startup vision, final audit |
+| 2.1 | 2026-07-18 | Expanded §17: original visual system, anti-clone craft rules, tokens, type, screen UI specs, motion, a11y, acceptance checklist |
 
 ---
 
-*End of plan V2. No implementation should begin until this document is reviewed and explicitly approved.*
+*End of plan V2.1. No implementation should begin until this document is reviewed and explicitly approved.*
