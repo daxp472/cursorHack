@@ -1,0 +1,200 @@
+# VedyaAI — Safety Constraint Rules
+# Deterministic safety gate rules evaluated BEFORE ranking.
+# severity: HARD_EXCLUDE (never show) | WARN (show with flag)
+# target_type: kalpana_class | ingredient_keyword | ingredient_name | dravya_concept
+
+# ============================================================
+# PRAMEHA / DIABETES RULES
+# ============================================================
+
+- rule_id: CR-01
+  condition: Prameha
+  condition_aliases: [Madhumeha, Diabetes, Diabetic]
+  target_type: kalpana_class
+  target_value: Asava/Arishta
+  severity: WARN
+  message: >
+    Fermented preparations (Asava/Arishta) contain naturally occurring alcohol from fermentation.
+    These are generally unsuitable in Prameha (Diabetes) as alcohol can cause blood sugar fluctuations.
+    Classical texts advise caution. Use with expert supervision only.
+  classical_basis: "Charaka Samhita, Chikitsasthana — Asava/Arishta contraindicated in Prameha context"
+
+- rule_id: CR-02
+  condition: Prameha
+  condition_aliases: [Madhumeha, Diabetes, Diabetic]
+  target_type: ingredient_keyword
+  target_value:
+    - Guda
+    - guda
+    - Jaggery
+    - jaggery
+    - Sharkara
+    - sharkara
+    - Mishri
+    - mishri
+    - Khand
+    - khand
+    - Rock Sugar
+    - rock sugar
+    - Sugar
+    - sugar
+    - Candy sugar
+    - Sitopala
+    - sitopala
+    - Khanda
+    - Matsyandika
+  severity: WARN
+  message: >
+    This formulation contains a sweetener ingredient (Guda/Sharkara/Mishri).
+    Sweeteners are generally contraindicated in Prameha/Diabetes due to their
+    Madhura (sweet) taste which may aggravate the condition. Consider alternative
+    formulations or physician supervision.
+  classical_basis: "Madhura rasa contraindicated in Prameha — Charaka Samhita, Nidanasthana 4"
+
+- rule_id: CR-03
+  condition: Prameha
+  condition_aliases: [Madhumeha, Diabetes, Diabetic]
+  target_type: ingredient_keyword
+  target_value:
+    - Draksha
+    - draksha
+    - Raisin
+    - Grape
+  severity: WARN
+  message: >
+    Draksha (grape/raisin) has high natural sugar content and Madhura Vipaka,
+    which may be unsuitable in Prameha. Use with caution.
+  classical_basis: "Madhura dravya caution in Prameha"
+
+# ============================================================
+# GARBHINI / PREGNANCY RULES
+# ============================================================
+
+- rule_id: CR-04
+  condition: Garbhini
+  condition_aliases: [Pregnancy, Pregnant]
+  target_type: ingredient_name
+  target_value:
+    - Trivrit
+    - Danti
+    - Saptala
+    - Shankhini
+    - Tilvaka
+    - Kutaja
+  severity: HARD_EXCLUDE
+  message: >
+    Contains strong purgative/emmenagogue herbs (Trivrit/Danti) that are
+    CONTRAINDICATED in pregnancy. These drugs cause strong downward movement (Adhobhagahara)
+    and may cause miscarriage. Do NOT use.
+  classical_basis: "Charaka Samhita, Kalpasthana — Virechana drugs contraindicated in Garbhini"
+
+- rule_id: CR-05
+  condition: Garbhini
+  condition_aliases: [Pregnancy, Pregnant]
+  target_type: kalpana_class
+  target_value: Asava/Arishta
+  severity: WARN
+  message: >
+    Fermented preparations (Asava/Arishta) contain alcohol and are generally
+    avoided during pregnancy. Consult an Ayurvedic physician before use.
+  classical_basis: "General caution for Asava/Arishta in pregnancy"
+
+- rule_id: CR-06
+  condition: Garbhini
+  condition_aliases: [Pregnancy, Pregnant]
+  target_type: ingredient_name
+  target_value:
+    - Guggulu
+    - Shilajit
+    - Pippali
+    - Marica
+    - Chitraka
+  severity: WARN
+  message: >
+    Contains herbs with strong Ushna (hot) potency or emmenagogue properties.
+    Use with caution in pregnancy under physician guidance only.
+  classical_basis: "Ushna virya dravyas — caution in Garbhavasta"
+
+# ============================================================
+# AMLAPITTA / HYPERACIDITY RULES
+# ============================================================
+
+- rule_id: CR-07
+  condition: Amlapitta
+  condition_aliases: [Hyperacidity, Acid reflux, GERD, Pitta excess]
+  target_type: ingredient_keyword
+  target_value:
+    - Maricha
+    - maricha
+    - Shunthi
+    - Pippali
+    - Trikatu
+    - trikatu
+    - Chitraka
+    - Vidanga
+  severity: WARN
+  message: >
+    Contains Katu (pungent) or Ushna (hot) ingredients that may aggravate
+    Amlapitta (hyperacidity / acid peptic disease). Use with caution.
+  classical_basis: "Katu-Amla-Ushna dravyas aggravate Pitta — Charaka Samhita"
+
+# ============================================================
+# RAKTAPITTA / BLEEDING DISORDERS RULES
+# ============================================================
+
+- rule_id: CR-08
+  condition: Raktapitta
+  condition_aliases: [Bleeding disorder, Hemorrhage, Hemoptysis]
+  target_type: ingredient_keyword
+  target_value:
+    - Maricha
+    - Pippali
+    - Shunthi
+    - Trikatu
+    - Chitraka
+    - Guggulu
+  severity: WARN
+  message: >
+    Contains ingredients with Ushna Virya or Tikshna Guna that may aggravate
+    Raktapitta (bleeding disorders). Classical texts contraindicate Ushna drugs
+    in active Raktapitta. Use with physician guidance.
+  classical_basis: "Charaka Samhita, Chikitsasthana 4 — Ushna contraindicated in Raktapitta"
+
+# ============================================================
+# KSHAYA / EMACIATION / VATA-DOMINANT RULES
+# ============================================================
+
+- rule_id: CR-09
+  condition: Kshaya
+  condition_aliases: [Emaciation, Severe debility, Daurbalya, Wasting]
+  target_type: ingredient_keyword
+  target_value:
+    - Trivrit
+    - Haritaki
+    - strong laxative
+  severity: WARN
+  message: >
+    Strong laxative/Virechana ingredients may further deplete an already weak patient.
+    Use with caution in severe Kshaya (emaciation/wasting) conditions.
+  classical_basis: "Balakshaya contraindication for aggressive Shodhana"
+
+# ============================================================
+# EXTERNAL APPLICATION ONLY
+# ============================================================
+
+- rule_id: CR-10
+  condition: any_internal
+  condition_aliases: [internal use, oral]
+  target_type: category_flag
+  target_value: external_only
+  severity: HARD_EXCLUDE
+  message: >
+    This formulation is intended for EXTERNAL APPLICATION ONLY (e.g., Taila, Ghrita
+    for wound application). It must not be taken internally.
+  classical_basis: "Bahya Chikitsa formulations — for external use only"
+  applies_to_yoga_names:
+    - Jatyadi Taila
+    - Jatyadi Ghrita
+    - Eladi Taila
+    - Ksheerabala Taila
+    - Bala Taila
