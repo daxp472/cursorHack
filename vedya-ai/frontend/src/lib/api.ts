@@ -212,8 +212,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 export const api = {
   getPresets: () => apiFetch<PresetVignette[]>("/presets"),
 
-  runPreset: (presetId: string) =>
-    apiFetch<RecommendationResponse>(`/presets/${presetId}`),
+  runPreset: (presetId: string, locale?: string) =>
+    apiFetch<RecommendationResponse>(
+      `/presets/${presetId}${locale ? `?locale=${encodeURIComponent(locale)}` : ""}`
+    ),
 
   recommend: (inp: VignetteInput) =>
     apiFetch<RecommendationResponse>("/recommend", {

@@ -9,18 +9,24 @@ from models.schemas import VignetteInput, ClinicalFrame
 from pipeline.intake import build_clinical_frame
 
 LLM_ENABLED = os.getenv("LLM_ENABLED", "true").lower() == "true"
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
-SYSTEM_PROMPT = """You are a clinical Ayurvedic entity extractor. 
+SYSTEM_PROMPT = """You are a clinical Ayurvedic entity extractor.
 Extract symptoms, diseases (rogas), and comorbidities from the patient vignette.
+The vignette may be in English, Hindi (Devanagari), or Gujarati script.
 Output ONLY valid JSON matching this schema:
 {
   "symptoms": ["list of symptom terms"],
-  "rogas": ["list of roga/disease names in Ayurvedic or English"],
+  "rogas": ["list of roga/disease names"],
   "comorbidities": ["list of comorbidities e.g. Diabetes, Pregnancy"],
   "age_band": "child|adult|elderly or null",
   "pregnancy": false
 }
-Use Ayurvedic canonical terms where known (e.g. Jvara for fever, Kasa for cough, Pinasa for cold).
+Map vernacular to Ayurvedic canonical where known:
+- fever / बुखार / તાવ → Jvara
+- cough / खाँसी / ઉધરસ → Kasa
+- cold / सर्दी / શરદી → Pinasa
+Keep both the vernacular token and the canonical name in symptoms/rogas when helpful.
 Do NOT invent diseases. Only extract what is clearly stated."""
 
 
@@ -31,12 +37,18 @@ async def understand(inp: VignetteInput, llm_client=None) -> ClinicalFrame:
 
     try:
         response = await llm_client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=OPENAI_MODEL,
             temperature=0.0,
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Patient vignette:\n{inp.free_text}"},
+                {
+                    "role": "user",
+                    "content": (
+                        f"UI locale hint: {getattr(inp, 'locale', None) or 'en'}\n"
+                        f"Patient vignette:\n{inp.free_text}"
+                    ),
+                },
             ],
             max_tokens=400,
         )

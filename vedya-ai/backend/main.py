@@ -11,6 +11,13 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Optional
 
+from dotenv import load_dotenv
+
+# Load env from vedya-ai/.env then backend/.env (user fills OPENAI / ElevenLabs keys)
+_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(_ROOT / ".env")
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
 import psycopg2
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,6 +35,7 @@ from pipeline.safety import SafetyEngine
 from pipeline.ranker import rank
 from pipeline.evidence import build_evidence_pack, build_compare_packs
 from pipeline.explainer import explain_recommendation, explain_compare
+from pipeline.localize import localize_recommendation, msg, norm_locale, translate_texts
 from auth import (
     AuthResponse, AuthUser, LoginRequest, SignupRequest,
     authenticate_user, create_access_token, create_user,
@@ -200,11 +208,18 @@ async def list_presets():
 
 
 @app.get("/presets/{preset_id}", tags=["Demo"])
-async def run_preset(preset_id: str, user: Optional[AuthUser] = Depends(get_optional_user)):
+async def run_preset(
+    preset_id: str,
+    locale: Optional[str] = Query(None),
+    user: Optional[AuthUser] = Depends(get_optional_user),
+):
     preset = get_preset(preset_id)
     if not preset:
         raise HTTPException(status_code=404, detail=f"Preset '{preset_id}' not found")
-    return await recommend(preset.vignette, user=user)
+    vignette = preset.vignette.model_copy(
+        update={"locale": norm_locale(locale or preset.vignette.locale or "en")}
+    )
+    return await recommend(vignette, user=user)
 
 
 @app.post("/recommend", response_model=RecommendationResponse, tags=["Core"])
@@ -212,9 +227,7 @@ async def recommend(inp: VignetteInput, user: Optional[AuthUser] = Depends(get_o
     db = _get_db()
     trace_id = str(uuid.uuid4())
     conversation_id = inp.conversation_id
-    locale = (inp.locale or "en").lower()
-    if locale not in {"en", "hi", "gu"}:
-        locale = "en"
+    locale = norm_locale(inp.locale)
 
     # Conversation continuity (authenticated users)
     if user and inp.follow_up and conversation_id:
@@ -235,6 +248,7 @@ async def recommend(inp: VignetteInput, user: Optional[AuthUser] = Depends(get_o
 
     # 1. Validate & normalize
     inp = validate_and_normalize(inp)
+    inp = inp.model_copy(update={"locale": locale})
 
     # 2. NL Understand → ClinicalFrame
     frame = await understand(inp, _llm_client)
@@ -244,27 +258,31 @@ async def recommend(inp: VignetteInput, user: Optional[AuthUser] = Depends(get_o
     resolver_output = resolver.resolve(frame)
 
     if not resolver_output.resolved_concepts:
-        return RecommendationResponse(
+        empty = RecommendationResponse(
             trace_id=trace_id,
             vignette_summary=frame.raw_input[:100],
             unresolved_terms=resolver_output.unresolved_terms,
-            coverage_note="No recognized Ayurvedic terms found. Try adding symptoms like 'Jvara', 'Kasa', 'Pinasa'.",
+            coverage_note=msg("coverage_no_terms", locale),
+            disclaimer=msg("disclaimer", locale),
             conversation_id=conversation_id,
         )
+        return await localize_recommendation(empty, locale, db, _llm_client)
 
     # 4. Candidate retrieval
     candidates = retrieve_candidates(resolver_output, frame, db, top_k=50)
 
     if not candidates:
-        return RecommendationResponse(
+        empty = RecommendationResponse(
             trace_id=trace_id,
             vignette_summary=_vignette_summary(frame),
             resolved_concepts=resolver_output.resolved_concepts,
             unresolved_terms=resolver_output.unresolved_terms,
             sense_disambiguations=resolver_output.sense_disambiguations,
-            coverage_note="No formulations found for these conditions in the current corpus.",
+            coverage_note=msg("coverage_no_formulations", locale),
+            disclaimer=msg("disclaimer", locale),
             conversation_id=conversation_id,
         )
+        return await localize_recommendation(empty, locale, db, _llm_client)
 
     # 5. Safety engine (deterministic)
     safety_engine = SafetyEngine(db)
@@ -327,7 +345,10 @@ async def recommend(inp: VignetteInput, user: Optional[AuthUser] = Depends(get_o
 
     coverage_note = None
     if resolver_output.unresolved_terms:
-        coverage_note = f"Could not resolve: {', '.join(resolver_output.unresolved_terms[:5])}"
+        coverage_note = (
+            f"{msg('coverage_unresolved_prefix', locale)}: "
+            f"{', '.join(resolver_output.unresolved_terms[:5])}"
+        )
 
     response = RecommendationResponse(
         trace_id=trace_id,
@@ -343,12 +364,16 @@ async def recommend(inp: VignetteInput, user: Optional[AuthUser] = Depends(get_o
         corpus_version=CORPUS_VERSION,
         llm_used=llm_used,
         coverage_note=coverage_note,
+        disclaimer=msg("disclaimer", locale),
         conversation_id=conversation_id,
     )
 
+    # 8. Dynamic locale pass (vernacular labels + optional OpenAI translation of details)
+    response = await localize_recommendation(response, locale, db, _llm_client)
+
     if user and conversation_id:
         top_name = ranked[0].yoga_name if ranked else "No match"
-        summary = f"Top pick: {top_name}. {vignette_summary}"
+        summary = f"Top pick: {top_name}. {response.vignette_summary}"
         add_message(
             db,
             conversation_id,
@@ -517,7 +542,7 @@ async def compare_formulations(
 
     pack_a = build_evidence_pack(yoga_a_data, make_result(yoga_a_data, 0.0))
     pack_b = build_evidence_pack(yoga_b_data, make_result(yoga_b_data, 0.0))
-    locale = (inp.locale or "en").lower() if inp else "en"
+    locale = norm_locale(inp.locale if inp else "en")
     return await explain_compare(pack_a, pack_b, vignette_summary, _llm_client, locale=locale)
 
 

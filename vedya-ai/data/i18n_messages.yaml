@@ -1,0 +1,22 @@
+# System UI strings for API responses (disclaimer, coverage). Not clinical corpus.
+# Prefer OpenAI dynamic translation when LLM_ENABLED=true; these are offline fallbacks.
+
+disclaimer:
+  en: "Educational decision support only — not a diagnosis or prescription. Clinical judgment of a qualified vaidya is required."
+  hi: "केवल शैक्षिक निर्णय सहायता — निदान या नुस्खा नहीं। योग्य वैद्य का नैदानिक निर्णय आवश्यक है।"
+  gu: "ફક્ત શૈક્ષણિક નિર્ણય સહાય — નિદાન કે પ્રિસ્ક્રિપ્શન નથી. લાયક વૈદ્યનો નૈદાનિક નિર્ણય જરૂરી છે."
+
+coverage_no_terms:
+  en: "No recognized Ayurvedic terms found. Try symptoms like fever (Jvara), cough (Kasa), or cold (Pinasa)."
+  hi: "कोई परिचित आयुर्वेदिक पद नहीं मिला। बुखार (ज्वर), खाँसी (कास) या सर्दी (पीनास) जैसे लक्षण आज़माएँ।"
+  gu: "કોઈ ઓળખાયેલું આયુર્વેદિક પદ મળ્યું નથી. તાવ (જ્વર), ઉધરસ (કાસ) કે શરદી (પીનાસ) જેવા લક્ષણો અજમાવો."
+
+coverage_no_formulations:
+  en: "No formulations found for these conditions in the current corpus."
+  hi: "वर्तमान कोश में इन स्थितियों के लिए कोई योग नहीं मिला।"
+  gu: "વર્તમાન કોષમાં આ સ્થિતિઓ માટે કોઈ યોગ મળ્યો નથી."
+
+coverage_unresolved_prefix:
+  en: "Could not resolve"
+  hi: "इन पदों का समाधान नहीं हुआ"
+  gu: "આ પદોનું નિરાકરણ થયું નહીં"

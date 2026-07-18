@@ -1,0 +1,100 @@
+# Vernacular overlays for Entity Resolver (HI / GU / EN variants).
+# Loaded by scripts/load_synonyms.py — update this file to expand coverage.
+# Classical Sanskrit canonical names stay in synonyms.yaml.
+
+- canonical: Jvara
+  hi: [बुखार, ज्वर, बुख़ार, तप]
+  gu: [તાવ, તાવો, જ્વર]
+
+- canonical: Kasa
+  hi: [खाँसी, खांसी, कास]
+  gu: [ઉધરસ, કાસ, ખાંસી]
+
+- canonical: Pinasa
+  hi: [सर्दी, जुकाम, पीनास, नाक बहना, प्रतिश्याय]
+  gu: [શરદી, ઝુકામ, પીનાસ, નાક વહેવું, પ્રતિશ્યાય]
+
+- canonical: Shwasa
+  hi: [साँस फूलना, श्वास, दमा, सांस की तकलीफ]
+  gu: [શ્વાસ, દમ, શ્વાસ લેવામાં તકલીફ]
+
+- canonical: Hikka
+  hi: [हिचकी, हिक्का]
+  gu: [હેડકી, હિક્કા]
+
+- canonical: Shotha
+  hi: [सूजन, शोथ, सूज़ा]
+  gu: [સોજો, શોથ]
+
+- canonical: Prameha
+  hi: [मधुमेह, डायबिटीज, प्रमेह]
+  gu: [મધુમેહ, ડાયાબિટીસ, પ્રમેહ]
+
+- canonical: Agnimandya
+  hi: [अपच, अग्निमांद्य, भूख न लगना]
+  gu: [અપચો, અગ્નિમાંદ્ય]
+
+- canonical: Vibandha
+  hi: [कब्ज, विबंध]
+  gu: [કબજિયાત, વિબંધ]
+
+- canonical: Atisara
+  hi: [दस्त, अतिसार]
+  gu: [ઝાડા, અતિસાર]
+
+- canonical: Arsha
+  hi: [बवासीर, अर्श]
+  gu: [મૂળવ્યાધિ, અર્શ]
+
+- canonical: Kamala
+  hi: [पीलिया, कामला]
+  gu: [કામળો, કામલા]
+
+- canonical: Kushtha
+  hi: [त्वचा रोग, कुष्ठ]
+  gu: [ત્વચા રોગ, કુષ્ઠ]
+
+- canonical: Vrana
+  hi: [घाव, व्रण]
+  gu: [ઘા, વ્રણ]
+
+- canonical: Pandu
+  hi: [खून की कमी, पांडु, एनीमिया]
+  gu: [લોહીની ઉણપ, પાંડુ]
+
+- canonical: Amavata
+  hi: [गठिया, आमवात]
+  gu: [સંધિવા, આમવાત]
+
+- canonical: Katigraha
+  hi: [कमर दर्द, कटिग्रह]
+  gu: [કમરનો દુખાવો, કટિગ્રહ]
+
+- canonical: Daurbalya
+  hi: [कमजोरी, दुर्बलता]
+  gu: [નબળાઈ, દૌર્બલ્ય]
+
+- canonical: Shoola
+  hi: [दर्द, शूल, पेट दर्द]
+  gu: [દુખાવો, શૂળ, પેટનો દુખાવો]
+
+- canonical: Chardi
+  hi: [उल्टी, छर्दि, मतली]
+  gu: [ઊલટી, છર્દિ]
+
+- canonical: Raktapitta
+  hi: [रक्तपित्त, रक्तस्राव]
+  gu: [રક્તપિત્ત]
+
+- canonical: Mutrashmari
+  hi: [गुर्दे की पथरी, मूत्राश्मरी]
+  gu: [મૂત્રાશ્મરી, પથરી]
+
+- canonical: Pregnancy
+  hi: [गर्भावस्था, गर्भ]
+  gu: [ગર્ભાવસ્થા, ગર્ભ]
+  # If Pregnancy is not a concept, loader skips missing canonicals
+
+- canonical: Amlapitta
+  hi: [अम्लपित्त, एसिडिटी]
+  gu: [અમ્લપિત્ત, એસિડિટી]

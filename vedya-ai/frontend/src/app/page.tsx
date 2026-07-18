@@ -72,7 +72,7 @@ export default function HomePage() {
   async function runPreset(presetId: string) {
     setLoadingPreset(presetId);
     try {
-      const result = await api.runPreset(presetId);
+      const result = await api.runPreset(presetId, locale);
       if (result.conversation_id) setConversationId(result.conversation_id);
       const preset = presets.find((p) => p.id === presetId);
       if (preset?.vignette) {

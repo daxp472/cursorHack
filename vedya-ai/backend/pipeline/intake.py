@@ -56,7 +56,7 @@ def get_preset(preset_id: str) -> PresetVignette | None:
 
 
 def validate_and_normalize(inp: VignetteInput) -> VignetteInput:
-    """Normalize the input: strip whitespace, lowercase comorbidities for matching."""
+    """Normalize the input: strip whitespace; preserve locale / conversation fields."""
     return VignetteInput(
         free_text=(inp.free_text or "").strip() or None,
         symptoms=[s.strip() for s in inp.symptoms if s.strip()],
@@ -67,18 +67,32 @@ def validate_and_normalize(inp: VignetteInput) -> VignetteInput:
         prakriti=inp.prakriti,
         kalpana_filter=inp.kalpana_filter,
         top_k=inp.top_k,
+        conversation_id=inp.conversation_id,
+        locale=inp.locale or "en",
+        follow_up=inp.follow_up,
     )
 
 
 def build_clinical_frame(inp: VignetteInput) -> ClinicalFrame:
     """Build a ClinicalFrame directly from structured input (used when LLM is off)."""
-    all_terms = inp.symptoms + inp.rogas
+    import re
+
+    all_terms = list(inp.symptoms) + list(inp.rogas)
     raw = inp.free_text or ", ".join(all_terms)
+    # Pull additional tokens from free text (English words + Indic script runs)
+    if inp.free_text:
+        extra = re.findall(
+            r"[\u0A80-\u0AFF]+|[\u0900-\u097F]+|[A-Za-z][A-Za-z\-]{1,}",
+            inp.free_text,
+        )
+        for tok in extra:
+            if tok not in all_terms:
+                all_terms.append(tok)
     comorbidities = list(inp.comorbidities)
     if inp.pregnancy and "Garbhini" not in comorbidities and "Pregnancy" not in comorbidities:
         comorbidities.append("Pregnancy")
     return ClinicalFrame(
-        symptoms=inp.symptoms,
+        symptoms=all_terms,
         rogas=inp.rogas,
         comorbidities=comorbidities,
         age_band=inp.age_band,

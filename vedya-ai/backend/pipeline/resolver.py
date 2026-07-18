@@ -18,17 +18,30 @@ class EntityResolver:
     def _lookup_term(self, surface: str) -> tuple[str, str, str] | None:
         """Returns (concept_id, canonical_name, concept_type) or None."""
         cur = self.conn.cursor()
+        # Exact match first (needed for Gujarati / Devanagari where lower() is a no-op but collation can differ)
         cur.execute(
             """
             SELECT c.concept_id::text, c.canonical_name, c.type
             FROM terms t
             JOIN concepts c ON t.concept_id = c.concept_id
-            WHERE lower(t.surface_form) = lower(%s)
+            WHERE t.surface_form = %s
             LIMIT 1
             """,
-            (surface,),
+            (surface.strip(),),
         )
         row = cur.fetchone()
+        if not row:
+            cur.execute(
+                """
+                SELECT c.concept_id::text, c.canonical_name, c.type
+                FROM terms t
+                JOIN concepts c ON t.concept_id = c.concept_id
+                WHERE lower(t.surface_form) = lower(%s)
+                LIMIT 1
+                """,
+                (surface,),
+            )
+            row = cur.fetchone()
         cur.close()
         return (str(row[0]), row[1], row[2]) if row else None
 
