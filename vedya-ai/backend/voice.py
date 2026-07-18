@@ -29,7 +29,7 @@ def _voice_id() -> str:
 
 
 def _tts_model() -> str:
-    return os.getenv("ELEVENLABS_TTS_MODEL", "eleven_multilingual_v2")
+    return os.getenv("ELEVENLABS_TTS_MODEL", "eleven_flash_v2_5")
 
 
 def _stt_model() -> str:
@@ -79,8 +79,10 @@ async def synthesize_speech(
         raise ValueError("Empty text")
 
     cleaned = " ".join(text.split())
-    if len(cleaned) > 1200:
-        cleaned = cleaned[:1200] + "…"
+    # Demo quotas are tiny — keep spoken lines short and clear
+    max_chars = int(os.getenv("ELEVENLABS_MAX_CHARS", "120"))
+    if len(cleaned) > max_chars:
+        cleaned = cleaned[:max_chars].rsplit(" ", 1)[0] + "."
 
     vid = voice_id or _voice_id()
     model = _tts_model()
@@ -99,11 +101,13 @@ async def synthesize_speech(
         "Content-Type": "application/json",
     }
 
+    output_format = os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_64")
+
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
             f"{ELEVEN_TTS_URL}/{vid}",
             headers=headers,
-            params={"output_format": "mp3_44100_128"},
+            params={"output_format": output_format},
             json=payload,
         )
         if resp.status_code >= 400:
@@ -164,34 +168,24 @@ def build_listen_script(
     winner_reason: str | None = None,
     locale: str = "en",
 ) -> str:
+    """Short spoken line for demos (quota-friendly)."""
     locale = locale if locale in {"en", "hi", "gu"} else "en"
-    form = kalpana or ""
+    form = f" ({kalpana})" if kalpana else ""
     if locale == "hi":
-        parts = [f"शीर्ष अनुशंसा: {yoga_name}"]
-        if form:
-            parts.append(f"कल्पना: {form}")
-        if summary:
-            parts.append(summary)
+        base = f"शीर्ष योग: {yoga_name}{form}."
         if winner_reason:
-            parts.append(f"तुलना: {winner_reason}")
-        parts.append("यह शैक्षिक निर्णय सहायता है, निदान या नुस्खा नहीं।")
-        return " ".join(parts)
+            return f"{base} {winner_reason}"[:180]
+        return base
     if locale == "gu":
-        parts = [f"ટોચની ભલામણ: {yoga_name}"]
-        if form:
-            parts.append(f"કલ્પના: {form}")
-        if summary:
-            parts.append(summary)
+        base = f"ટોચનો યોગ: {yoga_name}{form}."
         if winner_reason:
-            parts.append(f"સરખામણી: {winner_reason}")
-        parts.append("આ શૈક્ષણિક નિર્ણય સહાય છે, નિદાન કે પ્રિસ્ક્રિપ્શન નથી.")
-        return " ".join(parts)
-    parts = [f"Top recommendation: {yoga_name}"]
-    if form:
-        parts.append(f"Form: {form}")
-    if summary:
-        parts.append(summary)
+            return f"{base} {winner_reason}"[:180]
+        return base
+    base = f"Top pick: {yoga_name}{form}."
     if winner_reason:
-        parts.append(f"Comparison: {winner_reason}")
-    parts.append("Educational decision support only — not a diagnosis or prescription.")
-    return " ".join(parts)
+        return f"{base} {winner_reason}"[:180]
+    # Prefer a short slice of summary if present
+    if summary:
+        short = " ".join(summary.split())[:100]
+        return f"{base} {short}"
+    return base + " Educational decision support only."
